@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GenerateIsolines</name>
+    </assembly>
+    <members>
+        <member name="T:GenerateIsolines.GeneratorOfIsolines">
+            <summary>
+            Class for Creating nodes for isolines from FE 
+            </summary>
+        </member>
+        <member name="P:GenerateIsolines.GeneratorOfIsolines.fe_list">
+            <summary>
+            Property for list of FE from slab
+            </summary>
+        </member>
+        <member name="M:GenerateIsolines.GeneratorOfIsolines.#ctor(System.Collections.Generic.List{GenerateIsolines.FE})">
+            <summary>
+            
+            </summary>
+            <param name="fe_list">List of FE from slab</param>
+        </member>
+        <member name="M:GenerateIsolines.GeneratorOfIsolines.GetNewNodesInFE(System.Double)">
+            <summary>
+            Returns list of FE with filtred and filled list of nodesForMapping
+            </summary>
+            <param name="Areq">For filtring</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

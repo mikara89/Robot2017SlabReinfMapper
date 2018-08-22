@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="GetSlabReinfResult.LegendConrol"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GetSlabReinfResult"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel;assembly=GetSlabReinfResult"
+             d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
+             mc:Ignorable="d" 
+             
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="CellText" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="HeaderCellText" TargetType="DataGridColumnHeader">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <ScrollViewer>
+            <DataGrid   HorizontalAlignment="Center"
+            x:Name="dataGrid"
+            ItemsSource="{Binding Path=ListOfLagendItems,
+                Converter={StaticResource IgnoreFirstItemConverter}}"  
+            VerticalAlignment="Top"
+            CanUserAddRows="True"
+            Height="Auto"  
+            AutoGenerateColumns="False"
+            Width="Auto">
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Areg, Converter={StaticResource IgnoreFirstItemConverter}}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Width="Auto" 
+                                Binding="{Binding Discription,Mode=TwoWay}"
+                                    HeaderStyle="{StaticResource HeaderCellText}"
+                                    ElementStyle="{StaticResource CellText}"
+                                Header="Discription"/>
+
+                    <DataGridTextColumn Width="80" 
+                                    ElementStyle="{StaticResource CellText}"
+                                    HeaderStyle="{StaticResource HeaderCellText}"
+                                Binding="{Binding Areg,Mode=TwoWay}"
+                                Header="Areg">
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Header="Color" 
+                                        HeaderStyle="{StaticResource HeaderCellText}"
+                                        Width="50"  >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <xctk:ColorPicker Height="20" 
+                        SelectedColor="{Binding Color, Mode=TwoWay,
+                            UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+         
+    </Grid>
+</UserControl>
