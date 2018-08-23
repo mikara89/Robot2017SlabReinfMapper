@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using GetSlabReinfResult.DataCollector.Logic;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
+using WinForms = System.Windows.Forms;
 
 namespace GetSlabReinfResult.ViewModel
 {
@@ -12,9 +17,28 @@ namespace GetSlabReinfResult.ViewModel
 
     public class LegendViewModel : BaseViewModel
     {
+        public ICommand OpenCommand =>
+            new ActionCommand(async p => await Open());
+        public ICommand SaveCommand =>
+            new ActionCommand(async p => await Save()); 
+
+        private async Task Open()
+        {
+            WinForms.OpenFileDialog dialog = new WinForms.OpenFileDialog();
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+                PopulateTableFromString(LoadSaveFromToTextFile.ReadFile(dialog.FileName));
+        }
+        private async Task Save()
+        {
+            WinForms.SaveFileDialog dialog = new WinForms.SaveFileDialog();
+            dialog.DefaultExt = ".scl";
+            if (dialog.ShowDialog() == WinForms.DialogResult.OK)
+               LoadSaveFromToTextFile.SaveFile(this.ToString(),dialog.FileName);
+        }
+
         private BindingList<LegendItemViewModel> _listOfLagendItems;
         public BindingList<LegendItemViewModel> ListOfLagendItems
-        { get => _listOfLagendItems; set { SetValue(ref _listOfLagendItems, value); } }
+        { get => _listOfLagendItems; set { SetValue(ref _listOfLagendItems, value); OnPropertyChanged(nameof(ListOfLagendItems)); } }
 
         public double MaxA { get; internal set; }
         public double MinA { get;internal set; }
@@ -135,6 +159,53 @@ namespace GetSlabReinfResult.ViewModel
             _listOfLagendItems = new BindingList<LegendItemViewModel>(_listOfLagendItems.OrderBy(x => x.Areg).ToList());
             _listOfLagendItems.ListChanged += chengedHendler;
             OnPropertyChanged(nameof(ListOfLagendItems));
+        }
+
+        public override string ToString()
+        {
+            var text = "";
+
+            ListOfLagendItems.ToList().ForEach(x =>
+            {
+                text += $"{x.Discription};{x.Areg};color{x.Color.A}:{x.Color.R}:{x.Color.G}:{x.Color.B}{Environment.NewLine}";
+            });
+
+            return text;
+        }
+
+        public List<LegendItemViewModel> PopulateTableFromString(string text)
+        {
+            var list = new List<LegendItemViewModel>();
+            try
+            {
+                text.Split(Environment.NewLine.ToCharArray()).ToList().ForEach(x =>
+                {
+                    if (x != "")
+                    {
+                        var rows = x.Split(';');
+                        var LI = new LegendItemViewModel
+                        {
+                            Discription = rows[0],
+                            Areg = Convert.ToDouble(rows[1]),
+                            Color = Color.FromArgb(
+                                Convert.ToByte(rows[2].Replace("color", "").Split(':')[0]),
+                                Convert.ToByte(rows[2].Replace("color", "").Split(':')[1]),
+                                Convert.ToByte(rows[2].Replace("color", "").Split(':')[2]),
+                                Convert.ToByte(rows[2].Replace("color", "").Split(':')[3]))
+                        };
+                        list.Add(LI);
+                    }
+                });
+
+                ListOfLagendItems = new BindingList<LegendItemViewModel>(list);
+                ListOfLagendItems.ListChanged += chengedHendler;
+                
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Invalid string for creating scale");
+            }
         }
     }
 }

@@ -21,7 +21,13 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
+    <StackPanel>
+        <Menu>
+            <MenuItem Header="_Open/Save">
+                <MenuItem Header="_Open" Command="{Binding OpenCommand}"/>
+                <MenuItem Header="_Save" Command="{Binding SaveCommand}"/>
+            </MenuItem>
+        </Menu>
         <ScrollViewer>
             <DataGrid   HorizontalAlignment="Center"
             x:Name="dataGrid"
@@ -71,5 +77,5 @@
             </DataGrid>
         </ScrollViewer>
          
-    </Grid>
+    </StackPanel>
 </UserControl>

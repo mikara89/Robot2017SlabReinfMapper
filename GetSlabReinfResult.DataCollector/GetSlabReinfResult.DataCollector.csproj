@@ -36,6 +36,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Logic\GetSlabReinfResult.cs" />
     <Compile Include="Logic\IRSATableQueryingResult.cs" />
+    <Compile Include="Logic\LoadSaveFromToTextFile.cs" />
     <Compile Include="Logic\ProgressModelObject.cs" />
     <Compile Include="Logic\RSATableQueryingResult.cs" />
     <Compile Include="Logic\TempFileManager.cs" />

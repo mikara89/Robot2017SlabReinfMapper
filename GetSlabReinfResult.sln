@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateIsolines", "Generat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSlabReinfResult.DataCollector", "GetSlabReinfResult.DataCollector\GetSlabReinfResult.DataCollector.csproj", "{422F225F-BE55-4791-BD01-26C654F8D4BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSlabReinfResult.UnitTest", "GetSlabReinfResult.UnitTest\GetSlabReinfResult.UnitTest.csproj", "{A72510CC-6A01-407A-9EC7-AEFB7243547E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{422F225F-BE55-4791-BD01-26C654F8D4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{422F225F-BE55-4791-BD01-26C654F8D4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{422F225F-BE55-4791-BD01-26C654F8D4BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

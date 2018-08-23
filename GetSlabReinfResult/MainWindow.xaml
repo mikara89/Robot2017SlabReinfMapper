@@ -10,7 +10,8 @@
         Height="{Binding Height}" 
         MinHeight="{Binding Height}" 
         MaxHeight="{Binding Height}" 
-        Width="327.5">
+        Width="327.5" MinWidth="327.5"
+        MaxWidth="327.5">
     <Window.DataContext>
         <res:MainWindowModelView/>
     </Window.DataContext>
@@ -23,14 +24,18 @@
         </Grid.RowDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="50" />
                 <RowDefinition Height="Auto" />
 
             </Grid.RowDefinitions>
-            <TextBox x:Name="txtBox" Grid.Row="0"
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Enter slab number here:"/>
+                <TextBox x:Name="txtBox" Grid.Row="0"
                      Text="{Binding SlabNumb}"
-                     Margin="10"
+                     Margin="10,5,10,10"
                      />
+            </StackPanel>
+
             <StackPanel Grid.Row="1"
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
