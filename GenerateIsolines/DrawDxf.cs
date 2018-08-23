@@ -1,6 +1,7 @@
 ﻿using GenerateIsolines.Model;
 using netDxf;
 using netDxf.Entities;
+using netDxf.Tables;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -66,6 +67,34 @@ namespace GenerateIsolines
             }
           
         }
+        private Layer CreatLayout(string disc, Color color)
+        {
+            disc = disc.Replace("/", "_");
+            Layer layout=null;
+            dxf.Layers.ToList().ForEach(x =>
+            {
+                if (x.Name == disc)
+                    layout = x;
+            });
+            if (layout == null)
+            {
+                layout = new netDxf.Tables.Layer(disc);
+                layout.Color = new AciColor(color);
+            }
+            dxf.Layers.Add(layout);
+            return layout;
+        }
+        private Layer GetLayout(Color color)
+        {
+            Layer layout = null;
+            dxf.Layers.ToList().ForEach(x =>
+            {
+                if (x.Color == new AciColor(color))
+                    layout = x;
+            });
+
+            return layout == null ? dxf.Layers.ToList()[0] : layout;
+        }
 
         private void GetSolid(List<FE> listFE, RSAColor color)
         {
@@ -114,10 +143,13 @@ namespace GenerateIsolines
             foreach (var item in solids)
             {
                 item.Color = new AciColor(Color.FromArgb(color.R, color.G, color.B));
+                item.Layer = GetLayout(Color.FromArgb(color.R, color.G, color.B));
                 dxf.AddEntity(item);
             }
-            //HelpDrawFE(listFE); //drawing fe nodes
         }
+
+     
+
         private void GetIsoLines(List<FE> listFE, RSAColor color, double Areq)
         {
             var z = 0;
@@ -281,6 +313,7 @@ namespace GenerateIsolines
           
             legend.ListOfLagendItems.ForEach(
                 x => {
+                    CreatLayout(x.Discription, Color.FromArgb(x.Color.A, x.Color.R, x.Color.G, x.Color.B));
                     if (x.Color.A != 0)
                     {
                         mTexts.Add(

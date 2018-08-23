@@ -55,10 +55,10 @@ namespace GetSlabReinfResult.ViewModel
             return (Discription == p.Discription) && (Areg == p.Areg) && (Color == p.Color);
         }
 
-        public override int GetHashCode()
-        {
-            return Discription.Length * Convert.ToInt32(Areg) + Color.A + Color.R + Color.G + Color.B;
-        }
+        //public override int GetHashCode()
+        //{
+        //    return Discription.Length * Convert.ToInt32(Areg) + Color.A + Color.R + Color.G + Color.B;
+        //}
 
 
     }

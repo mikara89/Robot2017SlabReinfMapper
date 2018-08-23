@@ -201,8 +201,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
             var d = new DrawDxf(filePath, Edgets);
             var t = new Tuple<List<double>, List<RSA_FE>, List<RSAColor>>(listAreq, Panel, color);
 
-            d.DrawIsolines(t, a_Type, SkipA);
             d.DrawLegend(legend);
+            d.DrawIsolines(t, a_Type, SkipA);
+            
             d.SaveDrawing();
         }
 
