@@ -13,7 +13,7 @@ namespace GetSlabReinfResult.UnitTest
         [TestMethod]
         public void TestToString() 
         {
-            var l = new GetSlabReinfResult.ViewModel.LegendViewModel();
+            var l = new LegendViewModel(30, 0);
 
             var Expectlist = l.ListOfLagendItems.ToList();
             var str = l.ToString();
@@ -29,7 +29,7 @@ namespace GetSlabReinfResult.UnitTest
         [TestMethod]
         public void TestToStringSaveToFile() 
         {
-            var l = new LegendViewModel();
+            var l = new LegendViewModel(30,0);
 
             var Expectlist = l.ListOfLagendItems.ToList();
             var str = l.ToString();
@@ -45,7 +45,7 @@ namespace GetSlabReinfResult.UnitTest
         [TestMethod]
         public void TestReadAndPopulateFromFile()  
         {
-            var l = new LegendViewModel();
+            var l = new LegendViewModel(30, 0);
 
             var Expectlist = l.ListOfLagendItems.ToList();
             var str = l.ToString();

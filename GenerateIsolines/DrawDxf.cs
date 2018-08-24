@@ -143,7 +143,7 @@ namespace GenerateIsolines
             foreach (var item in solids)
             {
                 item.Color = new AciColor(Color.FromArgb(color.R, color.G, color.B));
-                item.Layer = GetLayout(Color.FromArgb(color.R, color.G, color.B));
+                item.Layer = GetLayout(Color.FromArgb(color.R, color.G, color.B))!=null? GetLayout(Color.FromArgb(color.R, color.G, color.B)):dxf.Layers.ToList()[0];
                 dxf.AddEntity(item);
             }
         }
@@ -168,17 +168,17 @@ namespace GenerateIsolines
                            new Vector2(n2.X, n2.Y))
                         { Color = new AciColor(Color.FromArgb(color.R, color.G, color.B)) });
 
-                        if (z % 40 == 0)
-                        {
-                            var text = new MText();
-                            text.Color = new AciColor(Color.FromArgb(color.R, color.G, color.B));
-                            text.Position = new Vector3(Node.GetMiddleNode(n1, n2).X, Node.GetMiddleNode(n1, n2).Y, 0);
-                            text.Rotation = Node.GetDegreeNode(n1, n2);
-                            text.AttachmentPoint = MTextAttachmentPoint.MiddleCenter;
-                            text.Height = 0.1;
-                            text.Value = Areq.ToString();
-                            dxf.AddEntity(text);
-                        }
+                        //if (z % 40 == 0)
+                        //{
+                        //    var text = new MText();
+                        //    text.Color = new AciColor(Color.FromArgb(color.R, color.G, color.B));
+                        //    text.Position = new Vector3(Node.GetMiddleNode(n1, n2).X, Node.GetMiddleNode(n1, n2).Y, 0);
+                        //    text.Rotation = Node.GetDegreeNode(n1, n2);
+                        //    text.AttachmentPoint = MTextAttachmentPoint.MiddleCenter;
+                        //    text.Height = 0.1;
+                        //    text.Value = Areq.ToString();
+                        //    dxf.AddEntity(text);
+                        //}
                     }
                     z++;
                 }
@@ -322,7 +322,7 @@ namespace GenerateIsolines
                             AttachmentPoint = MTextAttachmentPoint.BottomLeft,
                             Height = 0.13,
                             Position = textPos,
-                            Value = $"{x.Discription}"
+                            Value =x.Discription=="Max"? $"{x.Discription}({Math.Round(x.Areg,2)})" : $"{x.Discription}"
                         });
                         
                         solids.Add(

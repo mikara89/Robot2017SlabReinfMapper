@@ -14,11 +14,11 @@ namespace GetSlabReinfResult.ViewModel
 {
     public class MainWindowModelView : BaseViewModel
     {
-        public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
-        {
-            legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone=true,
-        };
+        //public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
+        //{
+        //    legendViewModel = DesignLegendViewModel.Instanc,
+        //    IsCollectorDone=true,
+        //};
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
@@ -37,11 +37,11 @@ namespace GetSlabReinfResult.ViewModel
 
         public MainWindowModelView()
         {
-            legendViewModel = new LegendViewModel();
-            legendViewModel.ListOfLagendItems.AddingNew += (s, e) =>
-            {
-                Height = 0;
-            };
+            //legendViewModel = new LegendViewModel();
+            //legendViewModel.ListOfLagendItems.AddingNew += (s, e) =>
+            //{
+            //    Height = 0;
+            //};
         }
 
         public ICommand CancelCommand => 
@@ -206,9 +206,10 @@ namespace GetSlabReinfResult.ViewModel
 
                 if (!ct.IsCancellationRequested)
                 {
+                    var min = task.Panel.Min(x => x.ExtremeMin(DrawingAType));
+                    var max = task.Panel.Max(x => x.ExtremeMax(DrawingAType));
+                    legendViewModel = new LegendViewModel(max, min);
                     IsCollectorDone = true;
-                    legendViewModel.MaxA = task.Panel.Max(x => x.ExtremeMax(DrawingAType));
-                    legendViewModel.MinA = task.Panel.Max(x => x.ExtremeMin(DrawingAType));
                 }
                 if (ct.IsCancellationRequested)
                     IsCollectorDone = false;
