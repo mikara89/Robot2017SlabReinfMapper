@@ -11,50 +11,89 @@ using System.Linq;
 
 namespace GenerateIsolines
 {
+    public interface IDrawDxfParametars
+    {
+        List<Node> slabEdgesNodes { get; set; }
+        Legend Legend { get; set; }
+        List<RSA_FE> ListFe { get; set; }
+        DrawAsType drawAsType { get; set; }
+        A_Type a_Type { get; set; }
+        double SkipA { get; set; }
+    }
+    public class DrawDxfParametars: IDrawDxfParametars
+    {
+        public List<Node> slabEdgesNodes { get; set; }
+        public Legend Legend { get; set; }
+        public List<RSA_FE> ListFe { get; set; }
+        public DrawAsType drawAsType { get; set; }
+        public A_Type a_Type { get; set; }
+        public double SkipA { get; set; }
+    }
+
     public class DrawDxf
     {
-
-        private readonly FileInfo fileInfo;
-        private List<Node> slabEdgthNodes;
-        private List<Node> openingEdgthNodes;
         private DxfDocument dxf;
-        public Vector2 LegendPosition { get;internal set; }
+        public Vector2 LegendPosition { get; internal set; } 
         public double offsetForLegend { get; set; } = 1;
+        public IDrawDxfParametars Parm { get; }
 
-
-        public DrawDxf(string filePath, List<Node> SlabEdgthNodes, List<Node> OpeningEdgthNodes = null)
+        public DrawDxf(IDrawDxfParametars parm)
         {
-            fileInfo = new FileInfo(filePath);
-            slabEdgthNodes = SlabEdgthNodes;
-            openingEdgthNodes = OpeningEdgthNodes;
+            Parm = parm;
             dxf = new DxfDocument();
 
-            LegendPosition=new Vector2( slabEdgthNodes.Max(x =>x.X)+ offsetForLegend, slabEdgthNodes.Max(x => x.Y) + offsetForLegend);
+            LegendPosition = new Vector2
+                (
+                    Parm.slabEdgesNodes.Max(x => x.X) + offsetForLegend, 
+                    Parm.slabEdgesNodes.Max(x => x.Y) + offsetForLegend
+                );
+            
         }
 
-
-        public void DrawIsolines(
-            Tuple<List<double>, List<RSA_FE>, List<RSAColor>> fEs,
-            A_Type a_Type, double SkipA, DrawAsType drawAsType = DrawAsType.SOLID)
+        /// <summary>
+        /// Draw solid or isolines
+        /// </summary>
+        /// <returns></returns>
+        public DrawDxf DrawIsolines()
         {
-            DrawEdgth();
-            DrawOpenings();
             double Areq;
             try
             {
-                for (int i = 0; i < fEs.Item1.Count; i++)
+                for (int i = 0; i < Parm.Legend.ListOfLagendItems.Count(); i++)
                 {
                     if (i == 0) Areq = 0;
-                    else Areq = fEs.Item1[i - 1];
-                    switch (drawAsType)
+                    else Areq = Parm.Legend.ListOfLagendItems[i - 1].Areg;
+                    switch (Parm.drawAsType)
                     {
                         case DrawAsType.SOLID:
-                            GetSolid(TranslateFE(Areq, a_Type, fEs.Item2, SkipA), fEs.Item3[i]);
-                            GetIsoLines(TranslateFE(Areq, a_Type, fEs.Item2, SkipA), new RSAColor(255, 255, 255), fEs.Item1[i]);
+                            GetSolid(
+                                TranslateFE(
+                                    Areq,
+                                    Parm.a_Type, 
+                                    Parm.ListFe, 
+                                    Parm.SkipA), 
+                                Parm.Legend.ListOfLagendItems[i].Color, 
+                                Parm.Legend.ListOfLagendItems[i].Discription);
+                            GetIsoLines(
+                                TranslateFE(
+                                    Areq,
+                                    Parm.a_Type,
+                                    Parm.ListFe, 
+                                    Parm.SkipA),
+                                new RSAColor(255, 255, 255),
+                                Parm.Legend.ListOfLagendItems[i].Areg,
+                                Parm.Legend.ListOfLagendItems[i].Discription);
                             break;
                         case DrawAsType.ISOLINES:
-                           
-                            GetIsoLinesV2(TranslateFE(fEs.Item1[i], a_Type, fEs.Item2, SkipA), fEs.Item3[i], fEs.Item1[i]);
+                            GetIsoLinesV2(
+                                TranslateFE(
+                                    Areq,
+                                    Parm.a_Type, 
+                                    Parm.ListFe,
+                                    Parm.SkipA), 
+                                Parm.Legend.ListOfLagendItems[i].Color,
+                                Parm.Legend.ListOfLagendItems[i].Areg,
+                                Parm.Legend.ListOfLagendItems[i].Discription);
                             break;
                         default:
                             break;
@@ -65,12 +104,14 @@ namespace GenerateIsolines
             {
                 throw new Exception($"Error in DrawIsolines: {ex.Message}");
             }
-          
+            return this;
         }
-        private Layer CreatLayout(string disc, Color color)
+
+
+        private Layer CreatLayer(string disc, Color color)
         {
             disc = disc.Replace("/", "_");
-            Layer layout=null;
+            Layer layout = null;
             dxf.Layers.ToList().ForEach(x =>
             {
                 if (x.Name == disc)
@@ -78,25 +119,39 @@ namespace GenerateIsolines
             });
             if (layout == null)
             {
-                layout = new netDxf.Tables.Layer(disc);
+                layout = new Layer(disc);
                 layout.Color = new AciColor(color);
             }
             dxf.Layers.Add(layout);
             return layout;
         }
-        private Layer GetLayout(Color color)
-        {
-            Layer layout = null;
-            dxf.Layers.ToList().ForEach(x =>
-            {
-                if (x.Color == new AciColor(color))
-                    layout = x;
-            });
 
-            return layout == null ? dxf.Layers.ToList()[0] : layout;
+        /// <summary>
+        /// Create layers from Legend(Scale)
+        /// </summary>
+        /// <returns></returns>
+        public DrawDxf CreatAllLayer()
+        {
+            Parm.Legend.ListOfLagendItems.ForEach(x =>
+            {
+               var disc = x.Discription.Replace("/", "_");
+                dxf.Layers.Add(new Layer(disc)
+                {
+                    Color =new AciColor(Color.FromArgb(x.Color.R, x.Color.G, x.Color.B))
+                });
+            });
+            return this;
         }
 
-        private void GetSolid(List<FE> listFE, RSAColor color)
+        private Layer GetLayer(string disc)
+        {
+            disc = disc.Replace("/", "_");
+            if (!dxf.Layers.Any(x => x.Name == disc)) return dxf.Layers.ToList()[0];
+
+            return dxf.Layers.First(x=>x.Name==disc);
+        }
+
+        private void GetSolid(List<FE> listFE, RSAColor color, string layer)
         {
             if (color.A == 0) return;
             var solids = new List<Solid>();
@@ -139,18 +194,18 @@ namespace GenerateIsolines
                 };
 
             });
-         
+
             foreach (var item in solids)
             {
                 item.Color = new AciColor(Color.FromArgb(color.R, color.G, color.B));
-                item.Layer = GetLayout(Color.FromArgb(color.R, color.G, color.B))!=null? GetLayout(Color.FromArgb(color.R, color.G, color.B)):dxf.Layers.ToList()[0];
+                item.Layer = GetLayer(layer);
                 dxf.AddEntity(item);
             }
         }
 
-     
 
-        private void GetIsoLines(List<FE> listFE, RSAColor color, double Areq)
+
+        private void GetIsoLines(List<FE> listFE, RSAColor color, double Areq, string layer)
         {
             var z = 0;
 
@@ -166,7 +221,10 @@ namespace GenerateIsolines
                         dxf.AddEntity(new Line(
                            new Vector2(n1.X, n1.Y),
                            new Vector2(n2.X, n2.Y))
-                        { Color = new AciColor(Color.FromArgb(color.R, color.G, color.B)) });
+                        {
+                            Color = new AciColor(Color.FromArgb(color.R, color.G, color.B)),
+                            Layer =GetLayer(layer)
+                        });
 
                         //if (z % 40 == 0)
                         //{
@@ -185,19 +243,21 @@ namespace GenerateIsolines
             });
         }
 
-        private void GetIsoLinesV2(List<FE> listFE, RSAColor color, double Areq) 
+        private void GetIsoLinesV2(List<FE> listFE, RSAColor color, double Areq, string layer)
         {
             var z = 0;
             var ListOfIsolines = GeneratorOfIsolines.GetIsoLines(listFE, Areq);
             ListOfIsolines.ForEach(x =>
             {
-                
+
                 List<PolylineVertex> pv = new List<PolylineVertex>();
                 x.Nodes.ForEach(y => pv.Add(new PolylineVertex(y.X, y.Y, 0)));
-                dxf.AddEntity(new Polyline(pv,x.IsClosed)
-                { Color = new AciColor(Color.FromArgb(color.R, color.G, color.B)),
-                 
-                    Lineweight = Lineweight.W15 }
+                dxf.AddEntity(new Polyline(pv, x.IsClosed)
+                {
+                    Color = new AciColor(Color.FromArgb(color.R, color.G, color.B)),
+                    Layer = GetLayer(layer),
+                    Lineweight = Lineweight.W15
+                }
 
                 );
                 var n1 = x.Nodes[x.Nodes.Count / 2];
@@ -209,35 +269,26 @@ namespace GenerateIsolines
                 text.AttachmentPoint = MTextAttachmentPoint.MiddleCenter;
                 text.Height = 0.1;
                 text.Value = Areq.ToString();
+                text.Layer = GetLayer(layer);
                 dxf.AddEntity(text);
 
             });
 
         }
 
-
-        private void HelpDrawFE(List<FE> listFE)
+        /// <summary>
+        /// Draw edges of slab
+        /// </summary>
+        /// <returns></returns>
+        public DrawDxf DrawEdges()
         {
-            listFE.ForEach(n =>
-            {
-                n.nodes.ForEach(v =>
-                {
-                    dxf.AddEntity(new Circle(new Vector2(v.X,v.Y),0.01));
-                });
-            });
-        }  
-        private void DrawEdgth() 
-        {
-            if (slabEdgthNodes != null)
-                ConnectNodes(slabEdgthNodes);
-        }
-        private void DrawOpenings()
-        {
-            if(openingEdgthNodes!=null)
-                ConnectNodes(openingEdgthNodes);
+            if (Parm.slabEdgesNodes != null)
+                ConnectNodes(Parm.slabEdgesNodes);
+            return this;
         }
 
-        private void ConnectNodes(List<Node> Nodes) 
+
+        private void ConnectNodes(List<Node> Nodes)
         {
             var pV = new List<PolylineVertex>();
             Nodes.ForEach(x =>
@@ -248,9 +299,17 @@ namespace GenerateIsolines
             dxf.AddEntity(new Polyline(pV.AsEnumerable(), true));
         }
 
-        public void SaveDrawing()
+
+        /// <summary>
+        /// Saves dxf file on given location
+        /// </summary>
+        /// <param name="filePath">Path to created file</param>
+        /// <returns></returns>
+        public DrawDxf SaveDrawing(string filePath) 
         {
+            var fileInfo = new FileInfo(filePath);
             dxf.Save(fileInfo.FullName);
+            return this;
         }
 
         private List<FE> TranslateFE(double Areq, A_Type a_Type, List<RSA_FE> Panel, double SkipA)
@@ -263,10 +322,15 @@ namespace GenerateIsolines
                 l.Add(e);
             });
             var v = new GeneratorOfIsolines(l);
-            return v.GetNewNodesInFE((Areq+ SkipA));
+            return v.GetNewNodesInFE((Areq + SkipA));
         }
 
-        public void DrawLegend(Legend legend )
+
+        /// <summary>
+        /// Create Lengend/Scale in drawing
+        /// </summary>
+        /// <returns></returns>
+        public DrawDxf DrawLegend()
         {
             Vector2 position = LegendPosition;
             //Footer 
@@ -288,14 +352,14 @@ namespace GenerateIsolines
             var footerText = new MText()
             {
                 Position = new Vector3(position.X + 0.06, position.Y + 0.06, 0),
-                Value = $"Extrime= {legend.Extrime} cm2/m",
+                Value = $"Extrime= {Parm.Legend.Extrime} cm2/m",
                 AttachmentPoint = MTextAttachmentPoint.BottomLeft,
                 Height = 0.13,
             };
 
             //body
             double n = 0;
-            n = 0.25/*+0.30*/ + legend.ListOfLagendItems.Count * 0.28;
+            n = 0.25/*+0.30*/ + Parm.Legend.ListOfLagendItems.Count * 0.28;
             var nText = 0.28;
             var bpoints = new List<Vector3>()
             {
@@ -305,15 +369,15 @@ namespace GenerateIsolines
                new Vector3(position.X, position.Y+ n, 0),
             };
             var body = new Polyline(bpoints, true);
-            var textPos = new Vector3(position.X + 0.60, position.Y+ 0.25, 0);
-            var solidPos = new Vector2(position.X+ width-0.7, position.Y + 0.25);
+            var textPos = new Vector3(position.X + 0.60, position.Y + 0.25, 0);
+            var solidPos = new Vector2(position.X + width - 0.7, position.Y + 0.25);
             var nSolid = 0.28;
             List<MText> mTexts = new List<MText>();
             List<Solid> solids = new List<Solid>();
-          
-            legend.ListOfLagendItems.ForEach(
+
+            Parm.Legend.ListOfLagendItems.ForEach(
                 x => {
-                    CreatLayout(x.Discription, Color.FromArgb(x.Color.A, x.Color.R, x.Color.G, x.Color.B));
+                    CreatLayer(x.Discription, Color.FromArgb(x.Color.A, x.Color.R, x.Color.G, x.Color.B));
                     if (x.Color.A != 0)
                     {
                         mTexts.Add(
@@ -322,9 +386,9 @@ namespace GenerateIsolines
                             AttachmentPoint = MTextAttachmentPoint.BottomLeft,
                             Height = 0.13,
                             Position = textPos,
-                            Value =x.Discription=="Max"? $"{x.Discription}({Math.Round(x.Areg,2)})" : $"{x.Discription}"
+                            Value = x.Discription == "Max" ? $"{x.Discription}({Math.Round(x.Areg, 2)})" : $"{x.Discription}"
                         });
-                        
+
                         solids.Add(
                             new Solid(
                                 solidPos,
@@ -333,15 +397,15 @@ namespace GenerateIsolines
                                 new Vector2(solidPos.X + 0.60, solidPos.Y + 0.2))
                             {
                                 Color = new AciColor(
-                                    Color.FromArgb(x.Color.A,x.Color.R, x.Color.G, x.Color.B)),
+                                    Color.FromArgb(x.Color.A, x.Color.R, x.Color.G, x.Color.B)),
                             }
                         );
                     }
-                    
+
                     textPos.Y += nText;
                     solidPos.Y += nSolid;
-                    }
-        
+                }
+
             );
 
             dxf.AddEntity(footer);
@@ -349,6 +413,8 @@ namespace GenerateIsolines
             dxf.AddEntity(body);
             mTexts.ForEach(x => dxf.AddEntity(x));
             solids.ForEach(x => dxf.AddEntity(x));
+
+            return this;
         }
     }
 }

@@ -176,16 +176,17 @@ namespace GetSlabReinfResult.ViewModel
                 }));
             try
             {
-                task.CreateDxfDrawing(FilePath+"\\"+Filename,
-                   legendViewModel.ListOfLagendItems.OrderBy(x=>x.Areg).Select(n => n.Areg).ToList(),
-                   legendViewModel.ListOfLagendItems.OrderBy(x => x.Areg).Select(n => n.Color).ToList(),
-                   DrawingAType,SkipA, l);
-                MessageBox.Show("Done");
+                task.CreateDxfDrawing(
+                  FilePath + "\\" + Filename,
+                  DrawingAType, 
+                  SkipA,
+                  l);
+                MessageBox.Show("Done","Work progress:");
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error:" +ex.Message);
+                MessageBox.Show("Error: " +ex.Message);
             }
            
         }
