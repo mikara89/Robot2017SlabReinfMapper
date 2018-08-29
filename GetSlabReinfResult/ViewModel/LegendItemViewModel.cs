@@ -9,10 +9,15 @@ namespace GetSlabReinfResult.ViewModel
         private double _areg;
         private Color _color;
 
-        public string Discription
+        public string Description
         {
             get => _discription;
-            set { SetValue(ref _discription, value); OnPropertyChanged(nameof(Discription)); }
+            set
+            {
+                SetValue(ref _discription, value);
+                OnPropertyChanged(nameof(Description));
+                //FromDisc();
+            }
         }
         public double Areg
         {
@@ -41,7 +46,7 @@ namespace GetSlabReinfResult.ViewModel
             }
 
             // Return true if the fields match:
-            return (Discription == p.Discription) && (Areg == p.Areg) && (Color == p.Color);
+            return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
         }
 
         public bool Equals(LegendItemViewModel p)
@@ -52,7 +57,21 @@ namespace GetSlabReinfResult.ViewModel
                 return false;
             }
             // Return true if the fields match:
-            return (Discription == p.Discription) && (Areg == p.Areg) && (Color == p.Color);
+            return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
+        }
+
+
+
+        private void FromDisc()
+        {
+            if (Description.Contains("=") && Description.Contains("s") && Description.Contains("d"))
+            {
+                var s = Convert.ToDouble(Description.Split('s')[1]);
+                var d = Convert.ToDouble(Description.Split('s')[0].Split('d')[1].Trim());
+
+                Areg = Math.Round((Math.Pow(s, 2) * Math.PI / 4) / d, 2);
+                Description = $"Ø{d}/{s}";
+            }
         }
 
         //public override int GetHashCode()

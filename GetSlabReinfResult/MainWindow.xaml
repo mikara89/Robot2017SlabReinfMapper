@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GetSlabReinfResult" x:Name="window"
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
+        xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
         mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
-        Title="Robot2017SlabReinfMapper" d:DesignHeight="500"
+        Title="Robot2017SlabReinfMapper" 
 
         Height="Auto" 
         SizeToContent="Height"
@@ -139,6 +140,25 @@
                 </StackPanel>
 
             </GroupBox>
+            
+        </Grid>
+        <Grid  
+            Visibility="{Binding IsDrawing, 
+    Converter={StaticResource BooleanToVisibilityConverter}}"
+            Grid.RowSpan="6"
+            x:Name="frameIndicator" 
+            Background="Black" 
+            Opacity="0.5">
+            <Grid Height="{Binding ElementName=window, Path=Width}">
+                <controler:BusyIndecatorControl />
+                <TextBlock 
+                    Text="Drawing..." 
+                    FontSize="30"
+                    Foreground="Beige" 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"/>
+            </Grid>
             
         </Grid>
     </Grid>

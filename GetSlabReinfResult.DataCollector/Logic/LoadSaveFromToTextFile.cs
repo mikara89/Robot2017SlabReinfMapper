@@ -18,14 +18,12 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 using (var tw = new StreamWriter(path))
                 {
                     tw.Write(text);
+                    return;
                 }
             }
-            else if (MessageBox.Show("File already exists. Do you want to override?", "File exists", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            using (var tw = new StreamWriter(path))
             {
-                using (var tw = new StreamWriter(path))
-                {
-                    tw.Write(text);
-                }
+                tw.Write(text);
             }
 
         }

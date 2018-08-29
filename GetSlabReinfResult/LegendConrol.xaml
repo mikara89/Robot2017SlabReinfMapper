@@ -11,7 +11,7 @@
              d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
              mc:Ignorable="d" 
              
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="250">
     <UserControl.Resources>
 
         <Style x:Key="CellText" TargetType="TextBlock">
@@ -31,20 +31,29 @@
                 <MenuItem Header="_Reset" Command="{Binding ResetCommand}"/>
             </MenuItem>
         </Menu>
-        <ScrollViewer>
-            <DataGrid   HorizontalAlignment="Center"
+        <StackPanel Orientation="Horizontal">
+            
+        </StackPanel>
+        <!--<ScrollViewer>-->
+        <DataGrid   
+            HorizontalAlignment="Center"
             x:Name="dataGrid"
             ItemsSource="{Binding Path=ListOfLagendItems,
                 Converter={StaticResource IgnoreFirstItemConverter}}"  
             VerticalAlignment="Top"
-            CanUserAddRows="True"
-            Height="Auto"  
+            CanUserAddRows="False"
+            Height="Auto"
             AutoGenerateColumns="False"
             Width="Auto">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedCellsChanged" >
+                        <i:InvokeCommandAction Command="{Binding CellEditedCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Discription,
+                        <DataTrigger Binding="{Binding Description,
                                 Converter={StaticResource EnableEditItemConverter}}" 
                                          Value="True">
                                 <Setter Property="IsEnabled" Value="False"/>
@@ -55,13 +64,13 @@
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
 
-                    <DataGridTextColumn Width="Auto" 
-                                Binding="{Binding Discription,Mode=TwoWay}"
+                <DataGridTextColumn Width="Auto" 
+                                Binding="{Binding Description,Mode=TwoWay}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                     ElementStyle="{StaticResource CellText}"
-                                Header="Discription"/>
+                                Header="Description"/>
 
-                    <DataGridTextColumn Width="80"  
+                <DataGridTextColumn Width="80"  
                                     ElementStyle="{StaticResource CellText}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                 Binding="{Binding Areg,Mode=TwoWay}"
@@ -81,7 +90,26 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        </ScrollViewer>
-         
+        <!--</ScrollViewer>-->
+        <DockPanel >
+            <Button 
+                Content="Add" 
+                Width="50" 
+                Padding="2"
+                Command="{Binding AddRowCommand}"
+                DockPanel.Dock="Left" 
+                Margin="35,5,0,0"/>
+            <Button 
+                Content="Remove" 
+                Padding="2"
+                Width="50" 
+                IsEnabled="{Binding ElementName=dataGrid, Path=SelectedItem, Converter={StaticResource IsEnabledRemoveButtonConverter}}"
+                Command="{Binding RemoveRowCommand}"
+                CommandParameter="{Binding ElementName=dataGrid , Path=SelectedItem}"
+                DockPanel.Dock="Right" 
+                Margin="0,5,35,0" 
+                HorizontalAlignment="Right"/>
+        </DockPanel>
+        
     </StackPanel>
 </UserControl>

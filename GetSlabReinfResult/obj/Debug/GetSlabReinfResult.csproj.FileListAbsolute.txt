@@ -145,3 +145,15 @@ F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debu
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debug\GetSlabReinfResult.csproj.CopyComplete
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debug\GetSlabReinfResult.exe
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debug\GetSlabReinfResult.pdb
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\Microsoft.Expression.Drawing.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\de\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\es\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\fr\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\it\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\ja\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\ko\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\ru\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\zh-Hans\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\bin\Debug\zh-Hant\Microsoft.Expression.Drawing.resources.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debug\Controler\BusyIndecatorControl.g.cs
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult\obj\Debug\Controler\BusyIndecatorControl.baml

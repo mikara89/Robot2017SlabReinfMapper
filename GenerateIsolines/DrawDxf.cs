@@ -85,6 +85,7 @@ namespace GenerateIsolines
                                 Parm.Legend.ListOfLagendItems[i].Discription);
                             break;
                         case DrawAsType.ISOLINES:
+                            Areq = Parm.Legend.ListOfLagendItems[i].Areg;
                             GetIsoLinesV2(
                                 TranslateFE(
                                     Areq,

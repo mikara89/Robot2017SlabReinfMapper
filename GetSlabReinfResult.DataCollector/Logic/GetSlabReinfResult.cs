@@ -209,6 +209,35 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 .DrawLegend()
                 .SaveDrawing(filePath);
         }
+        public async Task CreateDxfDrawingAsync( 
+            string filePath,
+            A_Type a_Type,
+            double SkipA,
+            Legend legend)
+            {
+            legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
+
+            IDrawDxfParametars p = new DrawDxfParametars
+            {
+                a_Type = a_Type,
+                drawAsType = DrawAsType.SOLID,
+                Legend = legend,
+                ListFe = Panel,
+                SkipA = SkipA,
+                slabEdgesNodes = Edgets
+            };
+            await Task.Run(() =>
+            {
+                var drawing = new DrawDxf(p);
+                drawing
+                    .CreatAllLayer()
+                    .DrawEdges()
+                    .DrawIsolines()
+                    .DrawLegend()
+                    .SaveDrawing(filePath);
+            });
+           
+        }
 
         public void ReportExtrimsReinf()
         {
