@@ -184,26 +184,59 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
         public void CreateDxfDrawing(
+        string filePath,
+        A_Type a_Type,
+        double SkipA,
+        Legend legend)
+        {
+            legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
+
+            IDrawDxfParametars p= new DrawDxfParametars
+            {
+                a_Type = a_Type,
+                drawAsType=DrawAsType.SOLID,
+                Legend=legend,
+                ListFe=Panel,
+                SkipA=SkipA,
+                slabEdgesNodes=Edgets
+            };
+            p.a_Type = a_Type;
+            var drawing = new DrawDxf(p);
+            drawing
+                .CreatAllLayer()
+                .DrawEdges()
+                .DrawIsolines()
+                .DrawLegend()
+                .SaveDrawing(filePath);
+        }
+        public async Task CreateDxfDrawingAsync( 
             string filePath,
-            List<double> listAreq,
-            List<Color> Colors,
             A_Type a_Type,
             double SkipA,
             Legend legend)
-        {
-            legend.Extrime=Panel.Max(x=>x.ExtremeMax(a_Type));
-            List<RSAColor> color = new List<RSAColor>();
-            Colors.ForEach(x =>
             {
-                color.Add(new RSAColor(x.R, x.G, x.B, x.A));
+            legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
 
+            IDrawDxfParametars p = new DrawDxfParametars
+            {
+                a_Type = a_Type,
+                drawAsType = DrawAsType.SOLID,
+                Legend = legend,
+                ListFe = Panel,
+                SkipA = SkipA,
+                slabEdgesNodes = Edgets
+            };
+            await Task.Run(() =>
+            {
+                var drawing = new DrawDxf(p);
+                drawing
+                    .CreatAllLayer()
+                    .DrawEdges()
+                    .DrawIsolines()
+                    .DrawLegend()
+                    .SaveDrawing(filePath);
             });
-            var d = new DrawDxf(filePath, Edgets);
-            var t = new Tuple<List<double>, List<RSA_FE>, List<RSAColor>>(listAreq, Panel, color);
-
-            d.DrawIsolines(t, a_Type, SkipA);
-            d.DrawLegend(legend);
-            d.SaveDrawing();
+           
         }
 
         public void ReportExtrimsReinf()

@@ -31,3 +31,15 @@ F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GenerateIsolines\obj\Debug\Gener
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GenerateIsolines\obj\Debug\GenerateIsolines.csproj.CopyComplete
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GenerateIsolines\obj\Debug\GenerateIsolines.dll
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GenerateIsolines\obj\Debug\GenerateIsolines.pdb
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\GenerateIsolines.xml
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\GenerateIsolines.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\GenerateIsolines.pdb
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\netDXF.Standard.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\Newtonsoft.Json.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\bin\Debug\Newtonsoft.Json.xml
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.csprojAssemblyReference.cache
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.csproj.ResolveComReference.cache
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.csproj.CoreCompileInputs.cache
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.csproj.CopyComplete
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.dll
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GenerateIsolines\obj\Debug\GenerateIsolines.pdb

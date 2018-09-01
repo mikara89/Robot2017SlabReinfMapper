@@ -12,5 +12,8 @@
         <convert:PathMultiValueConverter x:Key="PathMultiValueConverter"/>
         <convert:BooleanToHeightMultiConverter x:Key="BooleanToHeightMultiConverter"/>
         <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
+        <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
+        <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
+        
     </Application.Resources>
 </Application>

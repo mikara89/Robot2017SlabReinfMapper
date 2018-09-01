@@ -17,7 +17,7 @@ namespace GetSlabReinfResult.ViewModel
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
             legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone=true,
+            IsCollectorDone = true,
         };
 
         private LegendViewModel _legendViewModel;
@@ -34,22 +34,17 @@ namespace GetSlabReinfResult.ViewModel
         private A_Type _DrawingAType=  A_Type.AX_TOP;
         private double _SkipA=0;
         private double _Height=200;
+        private bool _isDrawing;
 
         public MainWindowModelView()
-        {
-            legendViewModel = new LegendViewModel();
-            legendViewModel.ListOfLagendItems.AddingNew += (s, e) =>
-            {
-                Height = 0;
-            };
-        }
+        {}
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
         public ICommand GetDataCommand => 
             new ActionCommand(async prg =>{await GetDataAsync();});
         public ICommand DrawCommand => 
-            new ActionCommand(prg => { Draw(); });
+            new ActionCommand(async prg => { IsDrawing = true; await Draw(); IsDrawing = false; });
         public ICommand GetFilePathCommand =>
             new ActionCommand(prg => { GetFilePath(); });
 
@@ -102,6 +97,17 @@ namespace GetSlabReinfResult.ViewModel
                     Height =0;
             }
         }
+
+        public bool IsDrawing
+        {
+            get { return _isDrawing; }
+            set
+            {
+                SetValue(ref _isDrawing, value);
+                OnPropertyChanged(nameof(IsDrawing));
+            }
+        }
+
         public string Filename
         {
             get { return _filename; }
@@ -154,12 +160,14 @@ namespace GetSlabReinfResult.ViewModel
             {
                 SetValue(ref _DrawingAType, value);
                 Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(DrawingAType)}.dxf";
+                SetLegend();
                 OnPropertyChanged(nameof(DrawingAType));
             }
         }
 
-        private void Draw()
+        private async Task Draw()
         {
+           
             var l = new GenerateIsolines.Model.Legend();
             l.slabNumber = SlabNumb;
             l.LegendOfType = FE.GetA_TypeAsString(DrawingAType);
@@ -171,23 +179,21 @@ namespace GetSlabReinfResult.ViewModel
                 {
                     Areg = x.Areg,
                     Color = new RSAColor(x.Color.R, x.Color.G, x.Color.B, x.Color.A),
-                    Discription = x.Discription,
+                    Discription = x.Description,
                     
                 }));
             try
             {
-                task.CreateDxfDrawing(FilePath+"\\"+Filename,
-                   legendViewModel.ListOfLagendItems.OrderBy(x=>x.Areg).Select(n => n.Areg).ToList(),
-                   legendViewModel.ListOfLagendItems.OrderBy(x => x.Areg).Select(n => n.Color).ToList(),
-                   DrawingAType,SkipA, l);
-                MessageBox.Show("Done");
-
+               await task.CreateDxfDrawingAsync(
+                  FilePath + "\\" + Filename,
+                  DrawingAType, 
+                  SkipA,
+                  l);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error:" +ex.Message);
+                MessageBox.Show("Error: " +ex.Message);
             }
-           
         }
 
         private async Task GetDataAsync()
@@ -206,9 +212,8 @@ namespace GetSlabReinfResult.ViewModel
 
                 if (!ct.IsCancellationRequested)
                 {
+                    SetLegend();
                     IsCollectorDone = true;
-                    legendViewModel.MaxA = task.Panel.Max(x => x.ExtremeMax(DrawingAType));
-                    legendViewModel.MinA = task.Panel.Max(x => x.ExtremeMin(DrawingAType));
                 }
                 if (ct.IsCancellationRequested)
                     IsCollectorDone = false;
@@ -218,6 +223,15 @@ namespace GetSlabReinfResult.ViewModel
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
+
+        private void SetLegend()
+        {
+            var min = task.Panel.Min(x => x.ExtremeMin(DrawingAType));
+            var max = task.Panel.Max(x => x.ExtremeMax(DrawingAType));
+
+            legendViewModel = new LegendViewModel(max, min);
+        }
+
         private async Task Cancel()
         {
             if (ts != null)

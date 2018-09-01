@@ -27,5 +27,36 @@
             <param name="Areq">For filtring</param>
             <returns></returns>
         </member>
+        <member name="M:GenerateIsolines.DrawDxf.DrawIsolines">
+            <summary>
+            Draw solid or isolines
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GenerateIsolines.DrawDxf.CreatAllLayer">
+            <summary>
+            Create layers from Legend(Scale)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GenerateIsolines.DrawDxf.DrawEdges">
+            <summary>
+            Draw edges of slab
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:GenerateIsolines.DrawDxf.SaveDrawing(System.String)">
+            <summary>
+            Saves dxf file on given location
+            </summary>
+            <param name="filePath">Path to created file</param>
+            <returns></returns>
+        </member>
+        <member name="M:GenerateIsolines.DrawDxf.DrawLegend">
+            <summary>
+            Create Lengend/Scale in drawing
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

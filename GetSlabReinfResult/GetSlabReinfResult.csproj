@@ -37,6 +37,10 @@
     <Reference Include="ColorPickerWPF, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ColorPickerWPF.1.0.9\lib\net461\ColorPickerWPF.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Drawing, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.5\Libraries\Microsoft.Expression.Drawing.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack.Core.1.1.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -87,6 +91,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controler\BusyIndecatorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -95,11 +103,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controler\BusyIndecatorControl.xaml.cs">
+      <DependentUpon>BusyIndecatorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\BooleanToHeightConverter.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\ConvertATypeToEnumAType.cs" />
     <Compile Include="Converter\ConvertColorToSolidColorBrush.cs" />
+    <Compile Include="Converter\EnableEditItemConverter.cs" />
     <Compile Include="Converter\IgnoreFirstItemConverter.cs" />
+    <Compile Include="Converter\IsTrueIfNotNullConverter.cs" />
     <Compile Include="Converter\PathMultiValueConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

@@ -3,3 +3,15 @@
 ################################################################################
 
 /.vs/GetSlabReinfResult/v15/Server/sqlite3
+/.vs/GetSlabReinfResult/v15
+/GetSlabReinfResult/obj
+/GetSlabReinfResult/bin
+
+/GenerateIsolines/obj
+/GenerateIsolines/bin
+
+/GetSlabReinfResult.DataCollector/obj
+/GetSlabReinfResult.DataCollector/bin
+
+/GetSlabReinfResult.UnitTest/obj
+/GetSlabReinfResult.UnitTest/bin

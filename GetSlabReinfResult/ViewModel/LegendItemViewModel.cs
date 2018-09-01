@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 
 namespace GetSlabReinfResult.ViewModel
 {
@@ -8,20 +9,76 @@ namespace GetSlabReinfResult.ViewModel
         private double _areg;
         private Color _color;
 
-        public string Discription
+        public string Description
         {
             get => _discription;
-            set { SetValue(ref _discription, value); }
+            set
+            {
+                SetValue(ref _discription, value);
+                OnPropertyChanged(nameof(Description));
+                //FromDisc();
+            }
         }
         public double Areg
         {
             get => _areg;
-            set { SetValue(ref _areg, value); }
+            set { SetValue(ref _areg, value); OnPropertyChanged(nameof(Areg)); }
         }
         public Color Color
         {
             get => _color;
-            set { SetValue(ref _color, value); }
+            set { SetValue(ref _color, value); OnPropertyChanged(nameof(Color)); }
         }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            LegendItemViewModel p = obj as LegendItemViewModel;
+            if ((LegendItemViewModel)p == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
+        }
+
+        public bool Equals(LegendItemViewModel p)
+        {
+            // If parameter is null return false:
+            if ((LegendItemViewModel)p == null)
+            {
+                return false;
+            }
+            // Return true if the fields match:
+            return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
+        }
+
+
+
+        private void FromDisc()
+        {
+            if (Description.Contains("=") && Description.Contains("s") && Description.Contains("d"))
+            {
+                var s = Convert.ToDouble(Description.Split('s')[1]);
+                var d = Convert.ToDouble(Description.Split('s')[0].Split('d')[1].Trim());
+
+                Areg = Math.Round((Math.Pow(s, 2) * Math.PI / 4) / d, 2);
+                Description = $"Ø{d}/{s}";
+            }
+        }
+
+        //public override int GetHashCode()
+        //{
+        //    return Discription.Length * Convert.ToInt32(Areg) + Color.A + Color.R + Color.G + Color.B;
+        //}
+
+
     }
 }

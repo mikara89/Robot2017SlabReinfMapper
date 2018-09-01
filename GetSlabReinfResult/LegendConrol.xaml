@@ -6,12 +6,14 @@
              xmlns:local="clr-namespace:GetSlabReinfResult"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
              xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel;assembly=GetSlabReinfResult"
              d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
              mc:Ignorable="d" 
              
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="250">
     <UserControl.Resources>
+
         <Style x:Key="CellText" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -21,55 +23,94 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <ScrollViewer>
-            <DataGrid   HorizontalAlignment="Center"
+    <StackPanel>
+        <Menu>
+            <MenuItem Header="_Open/Save">
+                <MenuItem Header="_Open"
+                          Command="{Binding OpenCommand}"/>
+                <MenuItem Header="_Save" 
+                          Command="{Binding SaveCommand}"/>
+                <MenuItem Header="_Reset" 
+                          Command="{Binding ResetCommand}"/>
+            </MenuItem>
+        </Menu>
+        <DataGrid   
+            HorizontalAlignment="Center"
             x:Name="dataGrid"
-            ItemsSource="{Binding Path=ListOfLagendItems,
-                Converter={StaticResource IgnoreFirstItemConverter}}"  
+            ItemsSource="{Binding Path=ListOfLagendItems}"  
             VerticalAlignment="Top"
-            CanUserAddRows="True"
-            Height="Auto"  
+            CanUserAddRows="False"
+            Height="Auto"
             AutoGenerateColumns="False"
             Width="Auto">
-                <DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Areg, Converter={StaticResource IgnoreFirstItemConverter}}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-                <DataGrid.Columns>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedCellsChanged" >
+                    <i:InvokeCommandAction Command="{Binding CellEditedCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Description,
+                                Converter={StaticResource EnableEditItemConverter}}" 
+                                         Value="True">
+                            <Setter Property="IsEnabled" 
+                                    Value="False"/>
+                            <Setter Property="Foreground" 
+                                    Value="LightGray"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
 
-                    <DataGridTextColumn Width="Auto" 
-                                Binding="{Binding Discription,Mode=TwoWay}"
+                <DataGridTextColumn Width="Auto" 
+                                Binding="{Binding Description,Mode=TwoWay}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                     ElementStyle="{StaticResource CellText}"
-                                Header="Discription"/>
+                                Header="Description"/>
 
-                    <DataGridTextColumn Width="80" 
+                <DataGridTextColumn Width="80"  
                                     ElementStyle="{StaticResource CellText}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                 Binding="{Binding Areg,Mode=TwoWay}"
                                 Header="Areg">
-                    </DataGridTextColumn>
+                </DataGridTextColumn>
 
-                    <DataGridTemplateColumn Header="Color" 
+                <DataGridTemplateColumn Header="Color" 
                                         HeaderStyle="{StaticResource HeaderCellText}"
                                         Width="50"  >
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <xctk:ColorPicker Height="20" 
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <xctk:ColorPicker Height="20" 
                         SelectedColor="{Binding Color, Mode=TwoWay,
                             UpdateSourceTrigger=PropertyChanged}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </ScrollViewer>
-         
-    </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DockPanel >
+            <Button 
+                Content="Add" 
+                Width="50" 
+                Padding="2"
+                Command="{Binding AddRowCommand}"
+                DockPanel.Dock="Left" 
+                Margin="35,5,0,0"/>
+            <Button 
+                Content="Remove" 
+                Padding="2"
+                Width="50" 
+                IsEnabled="{Binding ElementName=dataGrid, Path=SelectedItem,
+                Converter={StaticResource IsTrueIfNotNullConverter}}"
+                Command="{Binding RemoveRowCommand}"
+                CommandParameter="{Binding ElementName=dataGrid,
+                    Path=SelectedItem}"
+                DockPanel.Dock="Right" 
+                Margin="0,5,35,0" 
+                HorizontalAlignment="Right"/>
+        </DockPanel>
+        
+    </StackPanel>
 </UserControl>

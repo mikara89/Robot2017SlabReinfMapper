@@ -3,14 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GetSlabReinfResult"
+        xmlns:local="clr-namespace:GetSlabReinfResult" x:Name="window"
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
+        xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
         mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
-        Title="Robot2017SlabReinfMapper" d:DesignHeight="500"
-        Height="{Binding Height}" 
-        MinHeight="{Binding Height}" 
-        MaxHeight="{Binding Height}" 
-        Width="327.5">
+        Title="Robot2017SlabReinfMapper" 
+
+        Height="Auto" 
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        Width="327.5"
+        MinWidth="327.5"
+        MaxWidth="327.5">
     <Window.DataContext>
         <res:MainWindowModelView/>
     </Window.DataContext>
@@ -23,14 +27,18 @@
         </Grid.RowDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="50" />
                 <RowDefinition Height="Auto" />
 
             </Grid.RowDefinitions>
-            <TextBox x:Name="txtBox" Grid.Row="0"
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Enter slab number here:"/>
+                <TextBox x:Name="txtBox" Grid.Row="0"
                      Text="{Binding SlabNumb}"
-                     Margin="10"
+                     Margin="10,5,10,10"
                      />
+            </StackPanel>
+
             <StackPanel Grid.Row="1"
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
@@ -132,6 +140,25 @@
                 </StackPanel>
 
             </GroupBox>
+            
+        </Grid>
+        <Grid  
+            Visibility="{Binding IsDrawing, 
+    Converter={StaticResource BooleanToVisibilityConverter}}"
+            Grid.RowSpan="6"
+            x:Name="frameIndicator" 
+            Background="Black" 
+            Opacity="0.5">
+            <Grid Height="{Binding ElementName=window, Path=Width}">
+                <controler:BusyIndecatorControl />
+                <TextBlock 
+                    Text="Drawing..." 
+                    FontSize="30"
+                    Foreground="Beige" 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"/>
+            </Grid>
             
         </Grid>
     </Grid>
