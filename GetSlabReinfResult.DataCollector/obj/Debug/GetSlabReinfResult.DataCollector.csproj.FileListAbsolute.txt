@@ -20,14 +20,14 @@ F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GetSlabReinfResult.DataCollector
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csproj.CopyComplete
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.dll
 F:\Programing_CSharp\RSA.NET\GetSlabReinfResult\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.pdb
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csprojAssemblyReference.cache
+F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csproj.CoreCompileInputs.cache
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\GetSlabReinfResult.DataCollector.dll
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\GetSlabReinfResult.DataCollector.pdb
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\GenerateIsolines.dll
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\netDXF.Standard.dll
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\GenerateIsolines.pdb
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\bin\Debug\GenerateIsolines.xml
-F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csprojAssemblyReference.cache
-F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csproj.CoreCompileInputs.cache
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.csproj.CopyComplete
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.dll
 F:\Programing_CSharp\GitHub\Robot2017SlabReinfMapper\GetSlabReinfResult.DataCollector\obj\Debug\GetSlabReinfResult.DataCollector.pdb
