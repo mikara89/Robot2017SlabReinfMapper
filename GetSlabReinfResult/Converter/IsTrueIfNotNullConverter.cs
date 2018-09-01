@@ -4,15 +4,11 @@ using GetSlabReinfResult.ViewModel;
 
 namespace GetSlabReinfResult.Converter
 {
-    public class IsEnabledRemoveButtonConverter : IValueConverter
+    public class IsTrueIfNotNullConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if ((value is LegendItemViewModel))
-            {
-                return (value as LegendItemViewModel) != null ? true : false;
-            }
-            return false;
+             return value!= null ? true : false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -112,7 +112,7 @@
     <Compile Include="Converter\ConvertColorToSolidColorBrush.cs" />
     <Compile Include="Converter\EnableEditItemConverter.cs" />
     <Compile Include="Converter\IgnoreFirstItemConverter.cs" />
-    <Compile Include="Converter\IsEnabledRemoveButtonConverter.cs" />
+    <Compile Include="Converter\IsTrueIfNotNullConverter.cs" />
     <Compile Include="Converter\PathMultiValueConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

@@ -13,7 +13,7 @@
         <convert:BooleanToHeightMultiConverter x:Key="BooleanToHeightMultiConverter"/>
         <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
         <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
-        <convert:IsEnabledRemoveButtonConverter x:Key="IsEnabledRemoveButtonConverter"/>
+        <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
         
     </Application.Resources>
 </Application>
