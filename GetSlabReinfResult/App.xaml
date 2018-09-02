@@ -14,6 +14,8 @@
         <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
         <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
         <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
-        
+        <convert:ConvertDrawingAsTypeToEnumAType x:Key="ConvertDrawingAsTypeToEnumAType"/>
+        <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
+        <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
     </Application.Resources>
 </Application>

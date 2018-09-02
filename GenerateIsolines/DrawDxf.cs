@@ -50,6 +50,32 @@ namespace GenerateIsolines
             
         }
 
+        public static string GetDrawAsTypeAsString(DrawAsType val)
+        {
+            switch (val)
+            {
+                case DrawAsType.SOLID:
+                    return "SOLID";
+                case DrawAsType.ISOLINES:
+                    return "ISOLINES";
+                default:
+                    return "";
+            }
+        }
+
+        public static DrawAsType GetStringAsDrawAsType(string parameter)
+        {
+            switch (parameter)
+            {
+                case "SOLID":
+                    return DrawAsType.SOLID;
+                case "ISOLINES":
+                    return DrawAsType.ISOLINES ;
+                default:
+                    return DrawAsType.SOLID;
+            }
+        }
+
         /// <summary>
         /// Draw solid or isolines
         /// </summary>

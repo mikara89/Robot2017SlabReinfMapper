@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:GetSlabReinfResult" x:Name="window"
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
         xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
+        xmlns:validation="clr-namespace:GetSlabReinfResult.Validation"
         mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
         Title="Robot2017SlabReinfMapper" 
 
@@ -18,6 +19,21 @@
     <Window.DataContext>
         <res:MainWindowModelView/>
     </Window.DataContext>
+    <Window.Resources>
+        <Style TargetType="RadioButton">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <DockPanel>
+                            <Border BorderBrush="Transparent" BorderThickness="0">
+                                <AdornedElementPlaceholder/>
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -86,36 +102,90 @@
                     <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Center">
                         <RadioButton Content="Ax[+]" x:Name="firstRadioButton"
-                                     Padding="0,0,10,0" 
-                                     IsChecked="{Binding DrawingAType, 
+                                     Padding="0,0,10,0"
+                                     IsChecked="{Binding AType, 
                             Converter={StaticResource ConvertATypeToEnumAType},  
                             ConverterParameter='Ax[+]'}"/>
                         <RadioButton Content="Ay[+]" 
                                      Padding="0,0,10,0" 
-                                     IsChecked="{Binding DrawingAType, 
+                                     IsChecked="{Binding AType, 
                             Converter={StaticResource ConvertATypeToEnumAType},  
                             ConverterParameter='Ay[+]'}"/>
                         <RadioButton Content="Ax[-]" 
                                      Padding="0,0,10,0" 
-                                     IsChecked="{Binding DrawingAType, 
+                                     IsChecked="{Binding AType, 
                             Converter={StaticResource ConvertATypeToEnumAType} ,  
                             ConverterParameter='Ax[-]'}"/>
                         <RadioButton Content="Ay[-]" 
                                      Padding="0,0,10,0" 
-                                     IsChecked="{Binding DrawingAType, 
+                                     IsChecked="{Binding AType, 
                             Converter={StaticResource ConvertATypeToEnumAType},  
                             ConverterParameter='Ay[-]'}"/>
                         
                     </StackPanel>
+                   
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Skip [cm2]: " Padding="0,5,0,5"/>
-                        <TextBox Text="{Binding SkipA}" Width="40" Margin="5"/>
+                        <!--<TextBox Text="{Binding SkipA}" 
+                                 Width="40" 
+                                 Margin="5"/>-->
+                        <TextBox  x:Name="textSkipA"
+                                 Width="40" 
+                                 Margin="5">
+                            <TextBox.Resources>
+                                <validation:BindingProxy x:Key="proxy" Data="{Binding}"/>
+                            </TextBox.Resources>
+                            <TextBox.Text>
+                                <Binding Path="SkipA" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:SkipAValidateRule>
+                                            
+                                            <validation:SkipAValidateRule.Max>
+                                                <validation:ComparisonValue Value="{Binding Data.legendViewModel.MaxA,
+                                                    Source={StaticResource proxy}}" />
+                                            </validation:SkipAValidateRule.Max>
+                                            
+                                            <validation:SkipAValidateRule.Min>
+                                                <validation:ComparisonValue Value="{Binding Data.legendViewModel.MinA,
+                                                    Source={StaticResource proxy}}" />
+                                            </validation:SkipAValidateRule.Min>
+                                        </validation:SkipAValidateRule>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button Content="!" 
+                                FontWeight="Bold" 
+                                BorderBrush="Transparent" 
+                                Background="Transparent" 
+                                Foreground="Red" 
+                                Width="auto" Height="17" 
+                                Visibility="{Binding ElementName=textSkipA,
+                            Path=(Validation.Errors).CurrentItem ,
+                            Converter={StaticResource NotNullToVisibilityConverter}}"
+                                ToolTip="Invalid SkipA input"/>
                     </StackPanel>
                     
                     <ContentControl>
                         <local:LegendConrol Padding="5" 
                                             DataContext="{Binding legendViewModel}"/>
                     </ContentControl>
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
+
+                        <RadioButton Content="Solid" 
+                                     Padding="0,0,10,0" 
+                                     IsChecked="{Binding DrawingAsType, 
+                            Converter={StaticResource ConvertDrawingAsTypeToEnumAType},  
+                            ConverterParameter='SOLID'}"/>
+
+                        <RadioButton Content="Isolines"
+                                     Padding="0,0,10,0" 
+                                     IsChecked="{Binding DrawingAsType, 
+                            Converter={StaticResource ConvertDrawingAsTypeToEnumAType},  
+                            ConverterParameter='ISOLINES'}"/>
+                        
+                    </StackPanel>
                     <TextBlock>Save file path:</TextBlock>
                     <DockPanel>
                         <TextBox 
@@ -135,7 +205,9 @@
                                 HorizontalAlignment="Right"/>
                     </DockPanel>
                     <Button Content="Draw" 
-                            IsEnabled="{Binding IsCollectorDone}"
+                            IsEnabled="{Binding ElementName=textSkipA,
+                            Path=(Validation.Errors).CurrentItem ,
+                            Converter={StaticResource NotNullToFalseConverter}}"
                             Command="{Binding DrawCommand}"/>
                 </StackPanel>
 

@@ -111,6 +111,5 @@
                 Margin="0,5,35,0" 
                 HorizontalAlignment="Right"/>
         </DockPanel>
-        
     </StackPanel>
 </UserControl>

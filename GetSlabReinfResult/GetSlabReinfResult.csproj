@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon\Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ColorPickerWPF, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ColorPickerWPF.1.0.9\lib\net461\ColorPickerWPF.dll</HintPath>
@@ -110,9 +113,12 @@
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\ConvertATypeToEnumAType.cs" />
     <Compile Include="Converter\ConvertColorToSolidColorBrush.cs" />
+    <Compile Include="Converter\ConvertDrawingAsTypeToEnumAType.cs" />
     <Compile Include="Converter\EnableEditItemConverter.cs" />
     <Compile Include="Converter\IgnoreFirstItemConverter.cs" />
     <Compile Include="Converter\IsTrueIfNotNullConverter.cs" />
+    <Compile Include="Converter\NotNullToFalseConverter.cs" />
+    <Compile Include="Converter\NotNullToVisibilityConverter.cs" />
     <Compile Include="Converter\PathMultiValueConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -124,6 +130,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Validation\SkipAValidateRule.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\Command.cs" />
     <Compile Include="LegendConrol.xaml.cs">
@@ -181,6 +188,9 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

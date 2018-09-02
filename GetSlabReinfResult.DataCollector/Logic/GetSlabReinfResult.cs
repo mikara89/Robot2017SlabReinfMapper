@@ -184,17 +184,18 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
         public void CreateDxfDrawing(
-        string filePath,
-        A_Type a_Type,
-        double SkipA,
-        Legend legend)
+            string filePath,
+            A_Type a_Type,
+            double SkipA,
+            Legend legend,
+            DrawAsType drawAsType = DrawAsType.SOLID)
         {
             legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
 
             IDrawDxfParametars p= new DrawDxfParametars
             {
                 a_Type = a_Type,
-                drawAsType=DrawAsType.SOLID,
+                drawAsType= drawAsType,
                 Legend=legend,
                 ListFe=Panel,
                 SkipA=SkipA,
@@ -213,14 +214,15 @@ namespace GetSlabReinfResult.DataCollector.Logic
             string filePath,
             A_Type a_Type,
             double SkipA,
-            Legend legend)
+            Legend legend,
+            DrawAsType drawAsType = DrawAsType.SOLID)
             {
             legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
 
             IDrawDxfParametars p = new DrawDxfParametars
             {
                 a_Type = a_Type,
-                drawAsType = DrawAsType.SOLID,
+                drawAsType = drawAsType,
                 Legend = legend,
                 ListFe = Panel,
                 SkipA = SkipA,

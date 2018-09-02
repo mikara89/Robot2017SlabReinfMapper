@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace GetSlabReinfResult.Converter
 {
-    public class ConvertATypeToEnumAType : IValueConverter
+    public class ConvertDrawingAsTypeToEnumAType : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is GenerateIsolines.A_Type)
+            if (value is GenerateIsolines.DrawAsType)
             {
-                var val = (GenerateIsolines.A_Type)value;
+                var val = (GenerateIsolines.DrawAsType)value;
                 var par = (parameter as string);
-                var r= GenerateIsolines.FE.GetA_TypeAsString(val) == par;
-                return GenerateIsolines.FE.GetA_TypeAsString(val) == par;
+                var r= GenerateIsolines.DrawDxf.GetDrawAsTypeAsString(val) == par;
+                return GenerateIsolines.DrawDxf.GetDrawAsTypeAsString(val) == par;
             }
             return null;
 
@@ -25,11 +24,10 @@ namespace GetSlabReinfResult.Converter
             if (value is bool && (bool)value)
             {
                 var val = (bool)value;
-                var par = GenerateIsolines.FE.GetStringAsA_Type((string)parameter);
+                var par = GenerateIsolines.DrawDxf.GetStringAsDrawAsType((string)parameter);
                 return par;
             }
             return null;
         }
-      
     }
 }

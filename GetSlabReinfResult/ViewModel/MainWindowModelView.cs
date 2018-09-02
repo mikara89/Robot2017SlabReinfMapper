@@ -17,7 +17,7 @@ namespace GetSlabReinfResult.ViewModel
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
             legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone = true,
+            IsCollectorDone = true, SkipA=50
         };
 
         private LegendViewModel _legendViewModel;
@@ -31,7 +31,8 @@ namespace GetSlabReinfResult.ViewModel
         private int _Progress;
         private int _CountedObj;
         private string _ProgressString;
-        private A_Type _DrawingAType=  A_Type.AX_TOP;
+        private A_Type _AType=  A_Type.AX_TOP;
+        private DrawAsType _DrawingAsType = DrawAsType.SOLID; 
         private double _SkipA=0;
         private double _Height=200;
         private bool _isDrawing;
@@ -44,7 +45,7 @@ namespace GetSlabReinfResult.ViewModel
         public ICommand GetDataCommand => 
             new ActionCommand(async prg =>{await GetDataAsync();});
         public ICommand DrawCommand => 
-            new ActionCommand(async prg => { IsDrawing = true; await Draw(); IsDrawing = false; });
+            new ActionCommand(async prg => { IsDrawing = true; await DrawAsync(); IsDrawing = false; });
         public ICommand GetFilePathCommand =>
             new ActionCommand(prg => { GetFilePath(); });
 
@@ -127,7 +128,7 @@ namespace GetSlabReinfResult.ViewModel
         {
             get { return _slabNumb; }
             set { SetValue(ref _slabNumb, value);
-                Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(DrawingAType)}.dxf";
+                Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(AType)}.dxf";
                 OnPropertyChanged(nameof(SlabNumb)); }
         }
         public int Progress
@@ -153,27 +154,35 @@ namespace GetSlabReinfResult.ViewModel
                 OnPropertyChanged(nameof(CountedObj));
             }
         }
-        public A_Type DrawingAType
+        public A_Type AType
         {
-            get { return _DrawingAType; }
+            get { return _AType; }
             set
             {
-                SetValue(ref _DrawingAType, value);
-                Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(DrawingAType)}.dxf";
+                SetValue(ref _AType, value);
+                Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(AType)}.dxf";
+                SkipA = 0;
                 SetLegend();
-                OnPropertyChanged(nameof(DrawingAType));
+                OnPropertyChanged(nameof(_AType));
             }
         }
 
-        private async Task Draw()
+        public DrawAsType DrawingAsType
+        {
+            get => _DrawingAsType;
+            set { _DrawingAsType = value;
+                OnPropertyChanged(nameof(DrawingAsType)); }
+        }
+
+        private async Task DrawAsync()
         {
            
-            var l = new GenerateIsolines.Model.Legend();
-            l.slabNumber = SlabNumb;
-            l.LegendOfType = FE.GetA_TypeAsString(DrawingAType);
+            var scale = new GenerateIsolines.Model.Legend();
+            scale.slabNumber = SlabNumb;
+            scale.LegendOfType = FE.GetA_TypeAsString(AType);
             
             legendViewModel.ListOfLagendItems.ToList()
-                .ForEach(x => l.ListOfLagendItems.Add(
+                .ForEach(x => scale.ListOfLagendItems.Add(
                 
                 new GenerateIsolines.Model.LegendItem
                 {
@@ -186,9 +195,10 @@ namespace GetSlabReinfResult.ViewModel
             {
                await task.CreateDxfDrawingAsync(
                   FilePath + "\\" + Filename,
-                  DrawingAType, 
+                  AType, 
                   SkipA,
-                  l);
+                  scale,
+                  DrawingAsType);
             }
             catch (Exception ex)
             {
@@ -226,9 +236,10 @@ namespace GetSlabReinfResult.ViewModel
 
         private void SetLegend()
         {
-            var min = task.Panel.Min(x => x.ExtremeMin(DrawingAType));
-            var max = task.Panel.Max(x => x.ExtremeMax(DrawingAType));
+            var min = task.Panel.Min(x => x.ExtremeMin(AType));
 
+            var max = task.Panel.Max(x => x.ExtremeMax(AType));
+            if (SkipA < max) max -= SkipA;
             legendViewModel = new LegendViewModel(max, min);
         }
 
