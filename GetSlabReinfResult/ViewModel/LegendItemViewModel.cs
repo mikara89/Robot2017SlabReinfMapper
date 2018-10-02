@@ -16,7 +16,6 @@ namespace GetSlabReinfResult.ViewModel
             {
                 SetValue(ref _discription, value);
                 OnPropertyChanged(nameof(Description));
-                //FromDisc();
             }
         }
         public double Areg
@@ -32,23 +31,20 @@ namespace GetSlabReinfResult.ViewModel
 
         public override bool Equals(object obj)
         {
-            // If parameter is null return false.
+
             if (obj == null)
             {
                 return false;
             }
 
-            // If parameter cannot be cast to Point return false.
             LegendItemViewModel p = obj as LegendItemViewModel;
             if ((LegendItemViewModel)p == null)
             {
                 return false;
             }
 
-            // Return true if the fields match:
             return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
         }
-
         public bool Equals(LegendItemViewModel p)
         {
             // If parameter is null return false:
@@ -59,9 +55,6 @@ namespace GetSlabReinfResult.ViewModel
             // Return true if the fields match:
             return (Description == p.Description) && (Areg == p.Areg) && (Color == p.Color);
         }
-
-
-
         private void FromDisc()
         {
             if (Description.Contains("=") && Description.Contains("s") && Description.Contains("d"))
@@ -73,12 +66,5 @@ namespace GetSlabReinfResult.ViewModel
                 Description = $"Ø{d}/{s}";
             }
         }
-
-        //public override int GetHashCode()
-        //{
-        //    return Discription.Length * Convert.ToInt32(Areg) + Color.A + Color.R + Color.G + Color.B;
-        //}
-
-
     }
 }

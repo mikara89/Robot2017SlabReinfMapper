@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.RobotOM">
-      <HintPath>..\GetSlabReinfResult\obj\Debug\Interop.RobotOM.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\Autodesk Robot Structural Analysis Professional 2019\System\Exe\Interop.RobotOM.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="PresentationCore" />

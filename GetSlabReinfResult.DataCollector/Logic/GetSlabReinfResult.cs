@@ -107,8 +107,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             }
             while (ok)
             {
-                if (ct.IsCancellationRequested) break;
-
+                if (ct.IsCancellationRequested) break;               
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
 
                 if (p == Panel.First().Panel_ID)
@@ -119,7 +118,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                     {
                         if (ct.IsCancellationRequested) break;
                         for (int y = 0; y < Panel[x].nodes.Count; y++)
-                        {
+                        {                          
                             if (ct.IsCancellationRequested) break;
                             if (Panel[x].nodes[y].NodeId == nodeId)
                             {
