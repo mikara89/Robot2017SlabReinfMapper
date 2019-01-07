@@ -47,12 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logic\FE_TABLE_ROWS.cs" />
     <Compile Include="Logic\GetSlabReinfResult.cs" />
+    <Compile Include="Logic\IGetSlabReinfResult.cs" />
     <Compile Include="Logic\IRSATableQueryingResult.cs" />
     <Compile Include="Logic\LoadSaveFromToTextFile.cs" />
+    <Compile Include="Logic\MyExtensions.cs" />
     <Compile Include="Logic\ProgressModelObject.cs" />
     <Compile Include="Logic\RSATableQueryingResult.cs" />
     <Compile Include="Logic\TempFileManager.cs" />
+    <Compile Include="Logic\T_DATA_TYPES.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

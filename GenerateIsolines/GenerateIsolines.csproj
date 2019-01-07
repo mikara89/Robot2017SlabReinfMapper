@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\GenerateIsolines.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -49,7 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDrawMapping.cs" />
+    <Compile Include="Model\DrawDxfParametars.cs" />
     <Compile Include="GeneratorOfIsolines.cs" />
+    <Compile Include="Model\IDrawDxfParametars.cs" />
     <Compile Include="Model\A_Type.cs" />
     <Compile Include="Model\DrawAsType.cs" />
     <Compile Include="DrawDxf.cs" />

@@ -35,6 +35,7 @@ namespace GetSlabReinfResult.ViewModel
         public ICommand RemoveRowCommand =>
           new ActionCommand(p =>  ListOfLagendItems.Remove((p as LegendItemViewModel)));
 
+        
         private async Task Reset()
         {
             PopulateTableDefault();
@@ -77,7 +78,8 @@ namespace GetSlabReinfResult.ViewModel
         private double _minA;
         public double MaxA { get => _maxA; internal set { _maxA = value; OnPropertyChanged(nameof(MaxA)); } }
         public double MinA { get => _minA; internal set { _minA = value; OnPropertyChanged(nameof(MinA)); } }
-        
+        public double SkipA { get; set; }
+
 
 
         public BindingList<LegendItemViewModel> ListOfLagendItems
@@ -87,18 +89,12 @@ namespace GetSlabReinfResult.ViewModel
                 OnPropertyChanged(nameof(ListOfLagendItems));
             } }
 
-        public LegendViewModel(double MaxA, double MinA)
+        public LegendViewModel(double MaxA, double MinA,double SkipA=0)
         {
             this.MaxA = MaxA;
             this.MinA = MinA;
+            this.SkipA = SkipA;
             PopulateTableDefault();
-        }
-
-        public LegendViewModel(double MaxA, double MinA, string text)
-        {
-            this.MaxA = MaxA;
-            this.MinA = MinA;
-            PopulateTableFromString(text);
         }
 
         private void AddNewItemHendler(object sender, AddingNewEventArgs e)
@@ -106,7 +102,7 @@ namespace GetSlabReinfResult.ViewModel
             var r = new Random();
             var item = e.NewObject as LegendItemViewModel;
             item = new LegendItemViewModel();
-            item.Areg =Math.Round( MinA+((MaxA-MinA) / 2),2);
+            item.Areg =Math.Round( MinA+((MaxA-SkipA-MinA) / 2),2);
             item.Description = "New"+(ListOfLagendItems.Where(x=>x.Description.Contains("New")).Count()+1.0);
             item.Color = Color.FromArgb
                 (255,
@@ -208,7 +204,7 @@ namespace GetSlabReinfResult.ViewModel
             ///Adding Max
             ListOfLagendItems.Add(new LegendItemViewModel
             {
-                Areg = MaxA,
+                Areg = MaxA - SkipA,
                 Description = "Max",
                 Color = Colors.Red,
             });
@@ -275,7 +271,7 @@ namespace GetSlabReinfResult.ViewModel
                 ///Adding Max
                 list.Add(new LegendItemViewModel
                 {
-                    Areg = MaxA,
+                    Areg = MaxA - SkipA,
                     Description = "Max",
                     Color = Colors.Red,
                 });

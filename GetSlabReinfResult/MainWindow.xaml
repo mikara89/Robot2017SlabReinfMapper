@@ -136,7 +136,10 @@
                                 <validation:BindingProxy x:Key="proxy" Data="{Binding}"/>
                             </TextBox.Resources>
                             <TextBox.Text>
-                                <Binding Path="SkipA" UpdateSourceTrigger="PropertyChanged">
+                                <Binding 
+                                    Path="SkipA" 
+                                    UpdateSourceTrigger="PropertyChanged" 
+                                    Delay="1000" >
                                     <Binding.ValidationRules>
                                         <validation:SkipAValidateRule>
                                             

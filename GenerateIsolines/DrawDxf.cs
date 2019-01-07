@@ -1,5 +1,4 @@
-﻿using GenerateIsolines.Model;
-using netDxf;
+﻿using netDxf;
 using netDxf.Entities;
 using netDxf.Tables;
 using System;
@@ -11,43 +10,29 @@ using System.Linq;
 
 namespace GenerateIsolines
 {
-    public interface IDrawDxfParametars
-    {
-        List<Node> slabEdgesNodes { get; set; }
-        Legend Legend { get; set; }
-        List<RSA_FE> ListFe { get; set; }
-        DrawAsType drawAsType { get; set; }
-        A_Type a_Type { get; set; }
-        double SkipA { get; set; }
-    }
-    public class DrawDxfParametars: IDrawDxfParametars
-    {
-        public List<Node> slabEdgesNodes { get; set; }
-        public Legend Legend { get; set; }
-        public List<RSA_FE> ListFe { get; set; }
-        public DrawAsType drawAsType { get; set; }
-        public A_Type a_Type { get; set; }
-        public double SkipA { get; set; }
-    }
 
-    public class DrawDxf
+    public class DrawDxf : IDrawMapping
     {
         private DxfDocument dxf;
-        public Vector2 LegendPosition { get; internal set; } 
+        public double[] LegendPosition { get; internal set; } 
         public double offsetForLegend { get; set; } = 1;
-        public IDrawDxfParametars Parm { get; }
+        public IDrawParameters Parm { get; internal set; }
 
-        public DrawDxf(IDrawDxfParametars parm)
+        public DrawDxf(IDrawParameters parm)
         {
             Parm = parm;
             dxf = new DxfDocument();
 
-            LegendPosition = new Vector2
-                (
-                    Parm.slabEdgesNodes.Max(x => x.X) + offsetForLegend, 
-                    Parm.slabEdgesNodes.Max(x => x.Y) + offsetForLegend
-                );
+            LegendPosition = new double[]
+                {
+                    Parm.slabEdgesNodes.SelectMany(v => v.NodeEdges).Max(z =>z.X) + offsetForLegend,
+                    Parm.slabEdgesNodes.SelectMany(v => v.NodeEdges).Max(x => x.Y) + offsetForLegend
+                };
             
+        }
+        public DrawDxf()
+        {
+            dxf = new DxfDocument();
         }
 
         public static string GetDrawAsTypeAsString(DrawAsType val)
@@ -63,9 +48,9 @@ namespace GenerateIsolines
             }
         }
 
-        public static DrawAsType GetStringAsDrawAsType(string parameter)
+        public static DrawAsType GetStringAsDrawAsType(string parameters)
         {
-            switch (parameter)
+            switch (parameters)
             {
                 case "SOLID":
                     return DrawAsType.SOLID;
@@ -79,9 +64,11 @@ namespace GenerateIsolines
         /// <summary>
         /// Draw solid or isolines
         /// </summary>
-        /// <returns></returns>
-        public DrawDxf DrawIsolines()
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping DrawIsolines()
         {
+            if (Parm == null)
+                throw new Exception("No parametars for assigned");
             double Areq;
             try
             {
@@ -134,6 +121,21 @@ namespace GenerateIsolines
             return this;
         }
 
+        /// <summary>
+        /// Set parameters for drawing
+        /// </summary>
+        /// <param name="drawParameters">Parameters</param>
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping SetParamForDrawing(IDrawParameters drawParameters)
+        {
+            Parm = drawParameters ?? throw new ArgumentNullException(nameof(drawParameters));
+            LegendPosition = new double[]
+               {
+                    Parm.slabEdgesNodes.SelectMany(v => v.NodeEdges).Max(z =>z.X) + offsetForLegend,
+                    Parm.slabEdgesNodes.SelectMany(v => v.NodeEdges).Max(x => x.Y) + offsetForLegend
+               };
+            return this;
+        }
 
         private Layer CreatLayer(string disc, Color color)
         {
@@ -156,15 +158,24 @@ namespace GenerateIsolines
         /// <summary>
         /// Create layers from Legend(Scale)
         /// </summary>
-        /// <returns></returns>
-        public DrawDxf CreatAllLayer()
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping CreatAllLayer()
         {
+            if (Parm == null)
+                throw new Exception("No parametars for assigned");
             Parm.Legend.ListOfLagendItems.ForEach(x =>
             {
                var disc = x.Discription.Replace("/", "_");
                 dxf.Layers.Add(new Layer(disc)
                 {
                     Color =new AciColor(Color.FromArgb(x.Color.R, x.Color.G, x.Color.B))
+                });
+            });
+            Parm.slabEdgesNodes.ForEach(x =>
+            {
+                dxf.Layers.Add(new Layer($"Slab_{x.PanelId}")
+                {
+                    Color = new AciColor(Color.FromArgb(0, 255, 0))
                 });
             });
             return this;
@@ -229,8 +240,6 @@ namespace GenerateIsolines
                 dxf.AddEntity(item);
             }
         }
-
-
 
         private void GetIsoLines(List<FE> listFE, RSAColor color, double Areq, string layer)
         {
@@ -306,24 +315,31 @@ namespace GenerateIsolines
         /// <summary>
         /// Draw edges of slab
         /// </summary>
-        /// <returns></returns>
-        public DrawDxf DrawEdges()
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping DrawEdges()
         {
-            if (Parm.slabEdgesNodes != null)
-                ConnectNodes(Parm.slabEdgesNodes);
+            if (Parm == null)
+                throw new Exception("No parametars for assigned");
+            foreach (var slabEdgesNodes in Parm.slabEdgesNodes)
+            {
+                if (slabEdgesNodes != null)
+                    ConnectNodes(slabEdgesNodes.NodeEdges, slabEdgesNodes.PanelId);
+                
+            }
             return this;
         }
 
 
-        private void ConnectNodes(List<Node> Nodes)
+        private void ConnectNodes(List<Node> Nodes,int slabNum)
         {
             var pV = new List<PolylineVertex>();
             Nodes.ForEach(x =>
             {
                 pV.Add(new PolylineVertex(x.X, x.Y, 0));
             });
-
-            dxf.AddEntity(new Polyline(pV.AsEnumerable(), true));
+            var poly = new Polyline(pV.AsEnumerable(), true);
+            poly.Layer = GetLayer($"Slab_{slabNum}");
+            dxf.AddEntity(poly);
         }
 
 
@@ -331,9 +347,11 @@ namespace GenerateIsolines
         /// Saves dxf file on given location
         /// </summary>
         /// <param name="filePath">Path to created file</param>
-        /// <returns></returns>
-        public DrawDxf SaveDrawing(string filePath) 
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping SaveDrawing(string filePath) 
         {
+            if (Parm == null)
+                throw new Exception("No parametars for assigned");
             var fileInfo = new FileInfo(filePath);
             dxf.Save(fileInfo.FullName);
             return this;
@@ -356,10 +374,12 @@ namespace GenerateIsolines
         /// <summary>
         /// Create Lengend/Scale in drawing
         /// </summary>
-        /// <returns></returns>
-        public DrawDxf DrawLegend()
+        /// <returns>IDrawMapping</returns>
+        public IDrawMapping DrawLegend()
         {
-            Vector2 position = LegendPosition;
+            if (Parm == null)
+                throw new Exception("No parametars for assigned");
+            Vector2 position = new Vector2( LegendPosition[0], LegendPosition[1]);
             //Footer 
             Vector3 p1, p2, p3, p4;
             var width = 2.5;

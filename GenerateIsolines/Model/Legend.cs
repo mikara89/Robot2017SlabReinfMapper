@@ -11,7 +11,7 @@ namespace GenerateIsolines.Model
         public List<LegendItem> ListOfLagendItems { get; set; }
         public double   Extrime { get ; set ; }
         public string LegendOfType { get; set; }
-        public int slabNumber { get; set; }  
+        public string slabNumber { get; set; }  
 
         public Legend()
 

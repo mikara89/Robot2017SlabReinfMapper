@@ -17,17 +17,17 @@ namespace GetSlabReinfResult.ViewModel
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
             legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone = true, SkipA=50
+            IsCollectorDone = true, 
         };
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
         private CancellationToken ct;
         private bool _isCollectorDone;
-        private GetSlabReinfResultClass task;
+        private IGetSlabReinfResult task;
         private string _FilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) ;
         private string _filename="sample.dxf";
-        private int _slabNumb;
+        private string _slabNumb;
         private int _Progress;
         private int _CountedObj;
         private string _ProgressString;
@@ -64,6 +64,7 @@ namespace GetSlabReinfResult.ViewModel
             {
                 SetValue(ref _SkipA, value);
                 OnPropertyChanged(nameof(SkipA));
+                SetLegend();
             }
         }
         public LegendViewModel legendViewModel
@@ -124,7 +125,7 @@ namespace GetSlabReinfResult.ViewModel
             set { SetValue(ref _FilePath, value);
                 OnPropertyChanged(nameof(FilePath)); }
         }
-        public int SlabNumb
+        public string SlabNumb
         {
             get { return _slabNumb; }
             set { SetValue(ref _slabNumb, value);
@@ -178,7 +179,7 @@ namespace GetSlabReinfResult.ViewModel
         {
            
             var scale = new GenerateIsolines.Model.Legend();
-            scale.slabNumber = SlabNumb;
+            scale.slabNumber = SlabNumb.ToString();
             scale.LegendOfType = FE.GetA_TypeAsString(AType);
             
             legendViewModel.ListOfLagendItems.ToList()
@@ -216,8 +217,9 @@ namespace GetSlabReinfResult.ViewModel
                 var prg = new Progress<ProgressModelObject<double>>();
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
-
-                task = new GetSlabReinfResultClass(SlabNumb);
+                var gs = new DataCollector.Logic.GetSlabReinfResult();
+                //task = new MultiGetSlabReinfResult(gs,SlabNumb.ToIntArrayFromRobotStringSelection());
+                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection());
                 await task.StartAsync(prg, ct);
 
                 if (!ct.IsCancellationRequested)
@@ -239,8 +241,9 @@ namespace GetSlabReinfResult.ViewModel
             var min = task.Panel.Min(x => x.ExtremeMin(AType));
 
             var max = task.Panel.Max(x => x.ExtremeMax(AType));
-            if (SkipA < max) max -= SkipA;
-            legendViewModel = new LegendViewModel(max, min);
+            if (SkipA < max)
+                legendViewModel = new LegendViewModel(max, min, SkipA);
+            else legendViewModel = new LegendViewModel(max, min);
         }
 
         private async Task Cancel()

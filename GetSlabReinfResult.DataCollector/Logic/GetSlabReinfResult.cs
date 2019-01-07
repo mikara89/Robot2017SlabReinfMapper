@@ -6,66 +6,132 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using static GetSlabReinfResult.DataCollector.Logic.RSATableQueryingResult;
 
-namespace GetSlabReinfResult.DataCollector.Logic 
+namespace GetSlabReinfResult.DataCollector.Logic
 {
-    public class GetSlabReinfResultClass
+    public class GetSlabReinfResult : IGetSlabReinfResult
     {
-        private readonly int ObjNumber;
+        public int[] ObjNumbers { get; set; }
         private RobotApplication robot;
         private RobotStructure str;
         public bool IsDataCollected { get; internal set; }
-        public string messang;
 
 
-        public List<RSA_FE> Panel;
-        public List<Node> Edgets;
+        public List<RSA_FE> Panel { get; internal set; }
 
-        public GetSlabReinfResultClass(int ObjNumber)
+        public List<Panel> PanelEdges { get; internal set; }
+
+        #region Constructor
+    public GetSlabReinfResult(int[] ObjNumbers)
+        {
+            Init();
+            Validatings(ObjNumbers);
+            ValidatingOnSameZCoord(ObjNumbers);
+            this.ObjNumbers = ObjNumbers;
+        }
+
+        public GetSlabReinfResult()
+        {
+            Init();
+        }
+
+        private void Init()
         {
             robot = new RobotApplication();
             str = robot.Project.Structure;
-            this.ObjNumber = ObjNumber;
-            Valedating();
-
+            Panel = new List<RSA_FE>();
+            PanelEdges = new List<Panel>();
         }
+        #endregion
 
-        public virtual void Valedating()
+
+        #region Validate
+        public virtual void Validating(int ObjNumber)
         {
             var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
             if (slab == null)
                 throw new Exception($"Slab with number {ObjNumber} don't exist.");
             var s = slab.StructuralType;
-            if (s !=  IRobotObjectStructuralType.I_OST_SLAB)
-                throw new Exception($"Object with number {ObjNumber} is not slab, please eneter slab number.");
+            if (s != IRobotObjectStructuralType.I_OST_SLAB)
+                throw new Exception($"Object with number {ObjNumber} is not a slab, please enter a slab number.");
         }
 
-        public void GetSlabEdgets()
+        private void Validatings(int[] ObjNumbers)
         {
-            Edgets = new List<Node>();
-            var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
-            var modelPoints = (RobotGeoPoint3DCollection)slab.Main.ModelPoints;
-            for (int i = 1; i <= modelPoints.Count; i++)
+            foreach (var objNumber in ObjNumbers)
             {
-                var r = (RobotGeoPoint3D)modelPoints.Get(i);
-                Edgets.Add(new Node { X = r.X, Y = r.Y });
+                Validating(objNumber);
             }
+        }
 
+        public void ValidatingOnSameZCoord(int[] ObjNumbers)
+        {
+            var toRemove = new List<int>();
+            var slabsNodes = new List<FE>();
+            var s = new FE { };
+            foreach (var slabNumber in ObjNumbers)
+            {
+                s = new FE();
+                var slab = (RobotObjObject)str.Objects.Get(slabNumber);
+                s.Panel_ID = slabNumber;
+                s.nodes = new List<Node>();
+                var modelPoints = (RobotGeoPoint3DCollection)slab.Main.ModelPoints;
+                for (int i = 1; i <= modelPoints.Count; i++)
+                {
+                    var r = (RobotGeoPoint3D)modelPoints.Get(i);
+                    s.nodes.Add(new Node { X = r.X, Y = r.Y, A = r.Z });
+                }
+                slabsNodes.Add(s);
+            }
+            double Z = 0;
+            slabsNodes.ForEach(x =>
+            {
+                if (slabsNodes.IndexOf(x) == 0)
+                    Z = x.nodes.FirstOrDefault().A;
+                if (x.nodes.Any(y => y.A != Z))
+                {
+                    toRemove.Add(x.Panel_ID);
+                }
+            });
+
+            if (toRemove.Count != 0)
+                throw new Exception($"Slabs {toRemove.ToArray().ToRobotSelectionString()} not on same Z coordinat as {slabsNodes[0].Panel_ID}");
+        }
+        #endregion
+
+        #region CollectingData
+
+        
+        public void GetSlabsEdges(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress) 
+        {
+            var y = 0;
+            foreach (var ObjNumber in ObjNumbers)
+            {
+                y++;
+                progress.Report(new ProgressModelObject<double>() { ProgressToString = $"Getting slab edges {y}/{ObjNumbers.Count()}" });
+                var p = new Panel(); 
+                p.PanelId = ObjNumber;
+                var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
+                var modelPoints = (RobotGeoPoint3DCollection)slab.Main.ModelPoints;
+                for (int i = 1; i <= modelPoints.Count; i++)
+                {
+                    var r = (RobotGeoPoint3D)modelPoints.Get(i);
+                    p.NodeEdges.Add(new Node { X = r.X, Y = r.Y });
+                }
+                PanelEdges.Add(p);
+            }
         }
 
 
-
-        public virtual void  QueryResultsAndNodeCoord(string plate,
+        public virtual void QueryResultsAndNodeCoord(string plates,
             IProgress<ProgressModelObject<double>> progress,
             CancellationToken ct)
         {
             IRobotResultQueryReturnType Res;
 
             var selecPlate = str.Selections.Create(IRobotObjectType.I_OT_PANEL);
-            selecPlate.FromText(plate);
-            var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
+            selecPlate.FromText(plates);
 
             RobotResultQueryParams parm = new RobotResultQueryParams();
 
@@ -87,7 +153,14 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
 
             var t = new RSATableQueryingResult();
-            Panel = t.ReadFromTable(ObjNumber, progress, ct);
+
+
+            Panel = t.ReadFromTable(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
+
+            var notUniq = Panel.GroupBy(x => x.FE_ID)
+              .Where(g => g.Count() > 1)
+              .Select(y => y.Key)
+              .ToList();
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
             Res = robot.Project.Structure.Results.Query(parm, RobResRowSet);
@@ -107,33 +180,30 @@ namespace GetSlabReinfResult.DataCollector.Logic
             }
             while (ok)
             {
-                if (ct.IsCancellationRequested) break;               
+                if (ct.IsCancellationRequested) break;
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
 
-                if (p == Panel.First().Panel_ID)
+                var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
+                for (int x = 0; x < Panel.Count; x++)
                 {
-
-                    var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
-                    for (int x = 0; x < Panel.Count; x++)
+                    if (ct.IsCancellationRequested) break;
+                    for (int y = 0; y < Panel[x].nodes.Count; y++)
                     {
                         if (ct.IsCancellationRequested) break;
-                        for (int y = 0; y < Panel[x].nodes.Count; y++)
-                        {                          
-                            if (ct.IsCancellationRequested) break;
-                            if (Panel[x].nodes[y].NodeId == nodeId)
-                            {
-                                Panel[x].nodes[y].AX_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(3)) * 10000,3) ;
-                                Panel[x].nodes[y].AY_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(4)) * 10000, 3);
-                                Panel[x].nodes[y].AX_TOP = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(1)) * 10000, 3);
-                                Panel[x].nodes[y].AY_TOP = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(2)) * 10000, 3);
-                                Panel[x].nodes[y].X = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(5));
-                                Panel[x].nodes[y].Y = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(6));
-                                Panel[x].nodes[y].Z = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(7));
+                        if (Panel[x].nodes[y].NodeId == nodeId)
+                        {
+                            Panel[x].nodes[y].AX_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(3)) * 10000, 3);
+                            Panel[x].nodes[y].AY_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(4)) * 10000, 3);
+                            Panel[x].nodes[y].AX_TOP = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(1)) * 10000, 3);
+                            Panel[x].nodes[y].AY_TOP = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(2)) * 10000, 3);
+                            Panel[x].nodes[y].X = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(5));
+                            Panel[x].nodes[y].Y = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(6));
+                            Panel[x].nodes[y].Z = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(7));
 
-                            }
                         }
                     }
                 }
+
                 i++;
                 ok = RobResRowSet.MoveNext();
             }
@@ -141,48 +211,27 @@ namespace GetSlabReinfResult.DataCollector.Logic
             IsDataCollected = true;
         }
 
-
-
-
         /// <summary>
-        /// getting results Ax+, Ax-, Ay+, Ay- for slab
-        /// </summary>
-        /// <param name="progress"> IProgress for tacking progress</param>
-        /// <param name="ct">cancelacionToken</param>
-        public void Start(IProgress<ProgressModelObject<double>> progress,
-            CancellationToken ct)
-        {
-            QueryResultsAndNodeCoord(ObjNumber.ToString(), progress, ct);
-            GetSlabEdgets();
-
-            if (Panel != null)
-            {
-                ReportExtrimsReinf();
-            }
-        }
-
-        /// <summary>
-        /// getting results asyncronisly Ax+, Ax-, Ay+, Ay- for slab
+        /// getting results asynchronously Ax+, Ax-, Ay+, Ay- for slab
         /// </summary>
         /// <param name="progress"> IProgress for tacking progress</param>
         /// <param name="ct">cancelacionToken</param>
         public async Task StartAsync(IProgress<ProgressModelObject<double>> progress,
-            CancellationToken ct) 
+            CancellationToken ct)
         {
             await Task.Run(() =>
             {
-                QueryResultsAndNodeCoord(ObjNumber.ToString(), progress, ct);
-                if(!ct.IsCancellationRequested)GetSlabEdgets();
-
-            },ct);
-            
-            if (Panel != null)
-            {
-                ReportExtrimsReinf();
-            }
+                progress.Report(new ProgressModelObject<double>() { ProgressToString = $"Validating selection" });
+                if (!ct.IsCancellationRequested) Validatings(ObjNumbers);
+                if (!ct.IsCancellationRequested) ValidatingOnSameZCoord(ObjNumbers);
+                if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
+                QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+            }, ct);
         }
+        #endregion
 
-        public void CreateDxfDrawing(
+        #region Drawing
+        public async Task CreateDxfDrawingAsync(
             string filePath,
             A_Type a_Type,
             double SkipA,
@@ -191,63 +240,29 @@ namespace GetSlabReinfResult.DataCollector.Logic
         {
             legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
 
-            IDrawDxfParametars p= new DrawDxfParametars
-            {
-                a_Type = a_Type,
-                drawAsType= drawAsType,
-                Legend=legend,
-                ListFe=Panel,
-                SkipA=SkipA,
-                slabEdgesNodes=Edgets
-            };
-            p.a_Type = a_Type;
-            var drawing = new DrawDxf(p);
-            drawing
-                .CreatAllLayer()
-                .DrawEdges()
-                .DrawIsolines()
-                .DrawLegend()
-                .SaveDrawing(filePath);
-        }
-        public async Task CreateDxfDrawingAsync( 
-            string filePath,
-            A_Type a_Type,
-            double SkipA,
-            Legend legend,
-            DrawAsType drawAsType = DrawAsType.SOLID)
-            {
-            legend.Extrime = Panel.Max(x => x.ExtremeMax(a_Type));
-
-            IDrawDxfParametars p = new DrawDxfParametars
+            IDrawParameters p = new DrawDxfParametars
             {
                 a_Type = a_Type,
                 drawAsType = drawAsType,
                 Legend = legend,
                 ListFe = Panel,
                 SkipA = SkipA,
-                slabEdgesNodes = Edgets
+                slabEdgesNodes = PanelEdges
             };
             await Task.Run(() =>
             {
-                var drawing = new DrawDxf(p);
+                var drawing = new DrawDxf();
                 drawing
+                    .SetParamForDrawing(p)
                     .CreatAllLayer()
                     .DrawEdges()
                     .DrawIsolines()
                     .DrawLegend()
                     .SaveDrawing(filePath);
             });
-           
-        }
 
-        public void ReportExtrimsReinf()
-        {
-            if (Panel.Count > 0)
-                messang += $"Slab {ObjNumber}, Reinforcemet extreme values:" + "\n\r" +
-                 " Ax+ = " + Math.Round(Panel.Select(n => n.Max_AX_TOP).Max(), 2) + " [cm2]" + "\n\r" +
-                 " Ax- = " + Math.Round(Panel.Select(n => n.Max_AX_BOTTOM).Max(), 2) + " [cm2]" + "\n\r" +
-                 " Ay+ = " + Math.Round(Panel.Select(n => n.Max_AY_TOP).Max(), 2) + " [cm2]" + "\n\r" +
-                 " Ay- = " + Math.Round(Panel.Select(n => n.Max_AY_BOTTOM).Max(), 2) + " [cm2]" + "\n\r";
         }
+        #endregion
+
     }
 }

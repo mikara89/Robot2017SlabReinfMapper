@@ -1,13 +1,23 @@
 ﻿using System;
-
+using System.Collections.Generic;
 
 namespace GenerateIsolines
 {
+    public class Panel
+    {
+        public List<Node> NodeEdges { get; set; }
+        public int PanelId { get; set; }
+        public Panel()
+        {
+            NodeEdges = new List<Node>();
+        }
+    }
     public class Node 
     {
         public double A { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
+        public double Z { get; set; } 
 
         public Node()
         {

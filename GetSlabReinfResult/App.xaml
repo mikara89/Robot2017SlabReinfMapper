@@ -17,5 +17,6 @@
         <convert:ConvertDrawingAsTypeToEnumAType x:Key="ConvertDrawingAsTypeToEnumAType"/>
         <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
         <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
+        <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
     </Application.Resources>
 </Application>
