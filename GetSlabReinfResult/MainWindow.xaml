@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GetSlabReinfResult" x:Name="window"
+        xmlns:local="clr-namespace:GetSlabReinfResult" 
+        x:Name="window"
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
         xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
         xmlns:validation="clr-namespace:GetSlabReinfResult.Validation"
         mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
-        Title="Robot2017SlabReinfMapper" 
+        Title="RobotSlabReinfMapper" 
 
         Height="Auto" 
         SizeToContent="Height"
@@ -68,7 +69,7 @@
                 <Button x:Name="c_button" 
                         Margin="5" 
                         Padding="5"
-                    Command="{Binding CancelCommand}">
+                        Command="{Binding CancelCommand}">
                     Cancel
                 </Button>
             </StackPanel>
@@ -94,7 +95,8 @@
                            VerticalAlignment="Center"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="3" x:Name="gridDraving"
+        <Grid Grid.Row="3" 
+              x:Name="gridDraving"
               Visibility="{Binding IsCollectorDone, 
     Converter={StaticResource BooleanToVisibilityConverter}}">
             <GroupBox Header="Create drawing">
@@ -124,16 +126,19 @@
                         
                     </StackPanel>
                    
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="Skip [cm2]: " Padding="0,5,0,5"/>
-                        <!--<TextBox Text="{Binding SkipA}" 
-                                 Width="40" 
-                                 Margin="5"/>-->
-                        <TextBox  x:Name="textSkipA"
+                    <StackPanel 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center">
+                        <TextBlock 
+                            Text="Skip [cm2]: " 
+                            Padding="0,5,0,5"/>
+                        <TextBox x:Name="textSkipA"
                                  Width="40" 
                                  Margin="5">
                             <TextBox.Resources>
-                                <validation:BindingProxy x:Key="proxy" Data="{Binding}"/>
+                                <validation:BindingProxy 
+                                    x:Key="proxy" 
+                                    Data="{Binding}"/>
                             </TextBox.Resources>
                             <TextBox.Text>
                                 <Binding 
@@ -144,12 +149,14 @@
                                         <validation:SkipAValidateRule>
                                             
                                             <validation:SkipAValidateRule.Max>
-                                                <validation:ComparisonValue Value="{Binding Data.legendViewModel.MaxA,
+                                                <validation:ComparisonValue 
+                                                    Value="{Binding Data.legendViewModel.MaxA,
                                                     Source={StaticResource proxy}}" />
                                             </validation:SkipAValidateRule.Max>
                                             
                                             <validation:SkipAValidateRule.Min>
-                                                <validation:ComparisonValue Value="{Binding Data.legendViewModel.MinA,
+                                                <validation:ComparisonValue 
+                                                    Value="{Binding Data.legendViewModel.MinA,
                                                     Source={StaticResource proxy}}" />
                                             </validation:SkipAValidateRule.Min>
                                         </validation:SkipAValidateRule>
@@ -192,9 +199,10 @@
                     <TextBlock>Save file path:</TextBlock>
                     <DockPanel>
                         <TextBox 
-                                 IsEnabled="True" Width="265"
-                                 x:Name="fileButton"
-                                 HorizontalAlignment="Stretch">
+                            IsEnabled="True" 
+                            Width="265"
+                            x:Name="fileButton"
+                            HorizontalAlignment="Stretch">
                             <TextBox.Text>
                                 <MultiBinding Converter="{StaticResource PathMultiValueConverter}">
                                     <Binding Path="FilePath" />

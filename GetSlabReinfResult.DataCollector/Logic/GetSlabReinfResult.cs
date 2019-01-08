@@ -3,6 +3,7 @@ using GenerateIsolines.Model;
 using RobotOM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public int[] ObjNumbers { get; set; }
         private RobotApplication robot;
         private RobotStructure str;
+        private readonly string panelPath;
+        private readonly string edgesPath;
+
         public bool IsDataCollected { get; internal set; }
 
 
@@ -34,6 +38,18 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public GetSlabReinfResult()
         {
             Init();
+        }
+
+        /// <summary>
+        /// Use for Fake loading from json file
+        /// </summary>
+        /// <param name="panelPath">path of json file for panel</param>
+        /// <param name="edgesPath">path of json file for edges</param>
+        public GetSlabReinfResult(string panelPath,string edgesPath)
+        {
+
+            this.panelPath = panelPath;
+            this.edgesPath = edgesPath;
         }
 
         private void Init()
@@ -227,6 +243,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
                 QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
             }, ct);
+            if (IsDataCollected) SaveToJson();
         }
         #endregion
 
@@ -264,5 +281,49 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
         #endregion
 
+        public void SaveToJson()
+        {
+            using (StreamWriter file = File.CreateText(@"F:\panel.json"))
+            {
+                Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                //serialize object directly into file stream
+                serializer.Serialize(file, Panel);
+            }
+            using (System.IO.StreamWriter file = File.CreateText(@"F:\edges.json"))
+            {
+                Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                //serialize object directly into file stream
+                serializer.Serialize(file, PanelEdges);
+            }
+        }
+
+        public async Task StartFakeAsync(IProgress<ProgressModelObject<double>> progress, CancellationToken ct)
+        {
+
+            await Task.Run(() =>
+            {
+                if (File.Exists(panelPath) && !ct.IsCancellationRequested)
+                {
+                    progress.Report(new ProgressModelObject<double>
+                    {
+                        Progress = 40,
+                        ProgressToString = $"File {panelPath.Split('\\').Last()} is loading"
+                    });
+                    Panel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RSA_FE>>(File.ReadAllText(panelPath));
+                }
+                else throw new Exception($"File missing : {panelPath}");
+                if (File.Exists(edgesPath) && !ct.IsCancellationRequested)
+                {
+                    progress.Report(new ProgressModelObject<double>
+                    {
+                        Progress = 80,
+                        ProgressToString = $"File {edgesPath.Split('\\').Last()} is loading"
+                    });
+                    PanelEdges = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Panel>>(File.ReadAllText(edgesPath));
+                }    
+                else throw new Exception($"File missing : {edgesPath}");
+            });
+
+        }
     }
 }

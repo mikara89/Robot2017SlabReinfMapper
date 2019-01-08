@@ -15,6 +15,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         void GetSlabsEdges(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress);
         void QueryResultsAndNodeCoord(string plate, IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
         Task StartAsync(IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
+        Task StartFakeAsync(IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
         void Validating(int ObjNumber);
         List<RSA_FE> Panel { get;}
         List<Panel> PanelEdges { get; } 

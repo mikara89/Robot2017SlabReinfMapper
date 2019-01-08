@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Windows.Controls;
 using GenerateIsolines;
+using System.IO;
 
 namespace GetSlabReinfResult.ViewModel 
 {
@@ -43,7 +44,11 @@ namespace GetSlabReinfResult.ViewModel
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
         public ICommand GetDataCommand => 
-            new ActionCommand(async prg =>{await GetDataAsync();});
+            new ActionCommand(async prg =>{
+                if (SlabNumb.ToLower() == "fake")
+                    await GetDataAsyncFake();
+                else await GetDataAsync();
+            });
         public ICommand DrawCommand => 
             new ActionCommand(async prg => { IsDrawing = true; await DrawAsync(); IsDrawing = false; });
         public ICommand GetFilePathCommand =>
@@ -162,7 +167,6 @@ namespace GetSlabReinfResult.ViewModel
             {
                 SetValue(ref _AType, value);
                 Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(AType)}.dxf";
-                SkipA = 0;
                 SetLegend();
                 OnPropertyChanged(nameof(_AType));
             }
@@ -217,10 +221,50 @@ namespace GetSlabReinfResult.ViewModel
                 var prg = new Progress<ProgressModelObject<double>>();
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
-                var gs = new DataCollector.Logic.GetSlabReinfResult();
-                //task = new MultiGetSlabReinfResult(gs,SlabNumb.ToIntArrayFromRobotStringSelection());
+
                 task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection());
                 await task.StartAsync(prg, ct);
+
+                if (!ct.IsCancellationRequested)
+                {
+                    SetLegend();
+                    IsCollectorDone = true;
+                }
+                if (ct.IsCancellationRequested)
+                    IsCollectorDone = false;
+               
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private async Task GetDataAsyncFake()
+        {
+            IsCollectorDone = false;
+            try
+            {
+                ts = new CancellationTokenSource();
+                ct = ts.Token;
+                var prg = new Progress<ProgressModelObject<double>>();
+                (prg as Progress<ProgressModelObject<double>>)
+                    .ProgressChanged += (s, e) => UpdateProgressText(e);
+
+                var panelPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath)+ "\\panelFake.json";
+                var panelEdgesPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath) + "\\edgesFake.json";
+
+
+                task = new DataCollector.Logic.GetSlabReinfResult(panelPath, panelEdgesPath);
+                await task.StartFakeAsync(prg, ct);
+
+                (prg as IProgress<ProgressModelObject<double>>)
+                    .Report(new ProgressModelObject<double>
+                    {
+                        Progress = 100,
+                        ProgressToString = "Fake Loaded"
+                    });
+                
 
                 if (!ct.IsCancellationRequested)
                 {
