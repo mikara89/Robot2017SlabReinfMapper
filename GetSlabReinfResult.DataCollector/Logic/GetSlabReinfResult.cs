@@ -325,5 +325,12 @@ namespace GetSlabReinfResult.DataCollector.Logic
             });
 
         }
+
+        public void Dispose()
+        {
+            Panel = null;
+            PanelEdges = null;
+            ObjNumbers = null;
+        }
     }
 }

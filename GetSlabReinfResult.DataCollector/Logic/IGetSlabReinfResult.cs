@@ -7,7 +7,7 @@ using GenerateIsolines.Model;
 
 namespace GetSlabReinfResult.DataCollector.Logic
 {
-    public interface IGetSlabReinfResult
+    public interface IGetSlabReinfResult:IDisposable
     {
         bool IsDataCollected { get; }
 

@@ -135,6 +135,7 @@ namespace GetSlabReinfResult.ViewModel
             get { return _slabNumb; }
             set { SetValue(ref _slabNumb, value);
                 Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(AType)}.dxf";
+                Reset();
                 OnPropertyChanged(nameof(SlabNumb)); }
         }
         public int Progress
@@ -169,6 +170,18 @@ namespace GetSlabReinfResult.ViewModel
                 Filename = $"{SlabNumb}-{FE.GetA_TypeAsString(AType)}.dxf";
                 SetLegend();
                 OnPropertyChanged(nameof(_AType));
+            }
+        }
+
+        private void Reset()
+        {
+            if (IsCollectorDone)
+                IsCollectorDone =!IsCollectorDone;
+
+            if(task!=null)
+            {
+                task.Dispose();
+                UpdateProgressText(new ProgressModelObject<double>());
             }
         }
 

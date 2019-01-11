@@ -63,11 +63,13 @@
                         Content="Get slab data"
                         Margin="5"
                         Padding="5"
+                        TabIndex="0"
                         HorizontalAlignment="Right"
                         Command="{Binding GetDataCommand}">
                 </Button>
                 <Button x:Name="c_button" 
                         Margin="5" 
+                        TabIndex="1"
                         Padding="5"
                         Command="{Binding CancelCommand}">
                     Cancel
@@ -211,11 +213,13 @@
                             </TextBox.Text>
                         </TextBox>
                         <Button Content="..." 
+                                TabIndex="2"
                                 Command="{Binding GetFilePathCommand}"                              
                                 Width="20" 
                                 HorizontalAlignment="Right"/>
                     </DockPanel>
                     <Button Content="Draw" 
+                            TabIndex="3"
                             IsEnabled="{Binding ElementName=textSkipA,
                             Path=(Validation.Errors).CurrentItem ,
                             Converter={StaticResource NotNullToFalseConverter}}"
