@@ -399,7 +399,7 @@ namespace GenerateIsolines
             var footerText = new MText()
             {
                 Position = new Vector3(position.X + 0.06, position.Y + 0.06, 0),
-                Value = $"Extrime= {Parm.Legend.Extrime} cm2/m",
+                Value = $"Extrime= {Parm.Legend.Extrime-Parm.SkipA:F2} cm2/m",
                 AttachmentPoint = MTextAttachmentPoint.BottomLeft,
                 Height = 0.13,
             };
