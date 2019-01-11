@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSlabReinfResult.DataColl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSlabReinfResult.UnitTest", "GetSlabReinfResult.UnitTest\GetSlabReinfResult.UnitTest.csproj", "{A72510CC-6A01-407A-9EC7-AEFB7243547E}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Robot2017SlabReinfMapper_Setup", "Robot2017SlabReinfMapper_Setup\Robot2017SlabReinfMapper_Setup.vdproj", "{287FC60A-E0EA-49CD-ADC4-23EA07CC1F10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,8 @@ Global
 		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A72510CC-6A01-407A-9EC7-AEFB7243547E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{287FC60A-E0EA-49CD-ADC4-23EA07CC1F10}.Debug|Any CPU.ActiveCfg = Debug
+		{287FC60A-E0EA-49CD-ADC4-23EA07CC1F10}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

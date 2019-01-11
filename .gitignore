@@ -4,6 +4,7 @@
 
 /.vs/GetSlabReinfResult/v15/Server/sqlite3
 /.vs/GetSlabReinfResult/v15
+/Robot2017SlabReinfMapper_Setup
 bin
 obj
 /GetSlabReinfResult.UnitTest/bin
@@ -210,3 +211,4 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+/Robot2017SlabReinfMapper_Setup
