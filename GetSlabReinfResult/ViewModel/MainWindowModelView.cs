@@ -15,11 +15,11 @@ namespace GetSlabReinfResult.ViewModel
 {
     public class MainWindowModelView : BaseViewModel
     {
-        public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
-        {
-            legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone = true, 
-        };
+        //public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
+        //{
+        //    legendViewModel = DesignLegendViewModel.Instanc,
+        //    //IsCollectorDone = true, 
+        //};
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
@@ -205,7 +205,7 @@ namespace GetSlabReinfResult.ViewModel
                 new GenerateIsolines.Model.LegendItem
                 {
                     Areg = x.Areg,
-                    Color = new RSAColor(x.Color.R, x.Color.G, x.Color.B, x.Color.A),
+                    Color = new RSAColor(x.Color.R, x.Color.B, x.Color.G, x.Color.A),
                     Discription = x.Description,
                     
                 }));

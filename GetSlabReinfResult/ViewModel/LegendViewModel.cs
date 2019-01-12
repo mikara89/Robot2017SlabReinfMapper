@@ -112,7 +112,70 @@ namespace GetSlabReinfResult.ViewModel
             e.NewObject = item;
             Filter();
         }
+        #region ColorGenerator
 
+        private void SetHeatColors()
+        {
+            foreach (var item in ListOfLagendItems)
+            {
+                item.Color = HeatMap(item.Areg, MinA, MaxA - SkipA);
+            }
+        }
+        private Color HeatMap(double value, double min, double max)
+        {
+            double val = (value - min) / (max - min);
+            int A, B, R, G;
+            A = 255;
+            R = Convert.ToByte(255 * val);
+            B = Convert.ToByte(255 * (1 - val));
+            G = 0;
+            return Color.FromArgb(Convert.ToByte(A), Convert.ToByte(R), Convert.ToByte(G), Convert.ToByte(B));
+        }
+
+        private void SetScaleColors() 
+        {
+            var n = ListOfLagendItems.Count();
+            for (int i = 0; i < n; i++)
+            {
+                ListOfLagendItems[i].Color= ScaleColor((i+1)/Convert.ToDouble(n));
+            }
+        }
+        private Color ScaleColor(double n)
+        {
+            byte r = 0, g = 0, b = 0;
+            var f = 1.0 / 4;
+            if (n <= 1.0 / 4)
+            {
+
+                b = 255;
+                g =Convert.ToByte(255 * n /f);
+            }
+            else if (n <= 2.0 / 4)
+            {
+                g = 255;
+                b = Convert.ToByte(255-(255 * (n-f)/ f));
+            }
+            else if (n <= 3.0 / 4)
+            {
+                g = 255;
+                r = Convert.ToByte(255 * (n - f*2) / f);
+            }
+            else if (n <=4.0 / 4)
+            {
+                r = 255;
+                g = Convert.ToByte(255-(255 * (n - f * 3)/f));
+            }
+            try
+            {
+                return Color.FromArgb(255, r, g, b);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
+        #endregion
 
         private void chengedHendler(object s, ListChangedEventArgs e)
         {
@@ -217,6 +280,7 @@ namespace GetSlabReinfResult.ViewModel
             });
 
             SortList();
+            SetScaleColors();
         }
 
 
