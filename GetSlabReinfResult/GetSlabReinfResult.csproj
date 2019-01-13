@@ -34,7 +34,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -56,10 +56,10 @@
     <ApplicationIcon>Icon\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>46E227BE4A3380A262A7B7B850495B8BC173533D</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>5F2C8C2A9DAC17E83C8415AEE2E40D5B9E64CC4E</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>GetSlabReinfResult_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>GetSlabReinfResult_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -125,6 +125,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\MyExtensions.cs" />
+    <Compile Include="ViewModel\QuickSortLegendItem.cs" />
     <Page Include="Controler\BusyIndecatorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -146,6 +148,7 @@
     <Compile Include="Converter\ConvertATypeToEnumAType.cs" />
     <Compile Include="Converter\ConvertColorToSolidColorBrush.cs" />
     <Compile Include="Converter\ConvertDrawingAsTypeToEnumAType.cs" />
+    <Compile Include="Converter\ConvertScaleTypeToInt.cs" />
     <Compile Include="Converter\EnableEditItemConverter.cs" />
     <Compile Include="Converter\IgnoreFirstItemConverter.cs" />
     <Compile Include="Converter\IsTrueIfNotNullConverter.cs" />

@@ -12,8 +12,66 @@ namespace GetSlabReinfResult.ViewModel
 {
     public class DesignLegendViewModel: LegendViewModel
     {
-        public DesignLegendViewModel(double MaxA, double MinA) : base(MaxA, MinA)
+        public DesignLegendViewModel(double MaxA, double MinA) : base(MaxA, MinA,0)
         {
+            ListOfLagendItems = new BindingList<LegendItemViewModel> 
+            {
+                new LegendItemViewModel
+                {
+                    Areg = MinA + 0.01,
+                    Color = Colors.Transparent,
+                    Description = "Min"
+                },
+                 new LegendItemViewModel
+                {
+                    Areg=3.35,
+                    Color=Colors.LightPink,
+                    Description="Ø8/15cm"
+                },
+                 new LegendItemViewModel
+                {
+                    Areg=5.24,
+                    Color= Colors.Green,
+                    Description="Ø10/15cm"
+                },
+                new LegendItemViewModel
+                {
+                    Areg=7.54,
+                    Color= Colors.Magenta,
+                    Description="Ø12/15cm"
+                },
+                new LegendItemViewModel
+                {
+                    Areg=10.26,
+                    Color= Colors.Blue,
+                    Description="Ø14/15cm"
+                },
+                new LegendItemViewModel
+                {
+                    Areg=13.4,
+                    Color= Colors.Yellow,
+                    Description="Ø16/15cm"
+                },
+                 new LegendItemViewModel
+                {
+                    Areg=16.96,
+                    Color= Colors.WhiteSmoke,
+                    Description="Ø18/15cm"
+                },
+                new LegendItemViewModel
+                {
+                    Areg=20.93,
+                    Color= Colors.Teal,
+                    Description="Ø20/15cm"
+                },
+                new LegendItemViewModel
+                {
+                    Areg = MaxA - SkipA,
+                    Description = "Max",
+                    Color = Colors.Red,
+                },
+            };
+            ScaleType = 1;
         }
 
         public static DesignLegendViewModel Instanc => new DesignLegendViewModel(30,0);
@@ -79,6 +137,7 @@ namespace GetSlabReinfResult.ViewModel
         public double MaxA { get => _maxA; internal set { _maxA = value; OnPropertyChanged(nameof(MaxA)); } }
         public double MinA { get => _minA; internal set { _minA = value; OnPropertyChanged(nameof(MinA)); } }
         public double SkipA { get; set; }
+        private int _scaleType;
 
 
 
@@ -88,12 +147,28 @@ namespace GetSlabReinfResult.ViewModel
                 SetValue(ref _listOfLagendItems, value);
                 OnPropertyChanged(nameof(ListOfLagendItems));
             } }
-
+        public int ScaleType
+        {
+            get => _scaleType;
+            set
+            {
+                if (_scaleType != value)
+                {
+                    SetValue(ref _scaleType, value);
+                    OnPropertyChanged(nameof(ScaleType));
+                    if (ListOfLagendItems != null)
+                    {
+                        GenerateColors();
+                    }
+                }
+            }
+        }
         public LegendViewModel(double MaxA, double MinA,double SkipA=0)
         {
             this.MaxA = MaxA;
             this.MinA = MinA;
             this.SkipA = SkipA;
+            ScaleType = 1;
             PopulateTableDefault();
         }
 
@@ -111,8 +186,47 @@ namespace GetSlabReinfResult.ViewModel
                 Convert.ToByte(r.Next(0, 256)));
             e.NewObject = item;
             Filter();
+            GenerateColors();
         }
         #region ColorGenerator
+
+        private void GenerateColors()
+        {
+            switch (ScaleType)
+            {
+                case 0:
+                    RandomColors();
+                    break;
+                case 1:
+                    SetHeatColors();
+                    break;
+                case 2:
+                    Set5ColorsScale();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void RandomColors()
+        {
+            ListOfLagendItems[0].Color = Colors.Transparent;
+
+            ListOfLagendItems.Last().Color = Colors.Red;
+
+            var r = new Random();
+           
+            var n = ListOfLagendItems.Count();
+            for (int i = 1; i < n-1; i++)
+            {
+                ListOfLagendItems[i].Color = 
+                    Color.FromArgb(
+                        255,
+                        Convert.ToByte(r.Next(0,256)),
+                        Convert.ToByte(r.Next(0, 256)),
+                        Convert.ToByte(r.Next(0, 256)));
+            }
+        }
 
         private void SetHeatColors()
         {
@@ -132,7 +246,7 @@ namespace GetSlabReinfResult.ViewModel
             return Color.FromArgb(Convert.ToByte(A), Convert.ToByte(R), Convert.ToByte(G), Convert.ToByte(B));
         }
 
-        private void SetScaleColors() 
+        private void Set5ColorsScale() 
         {
             var n = ListOfLagendItems.Count();
             for (int i = 0; i < n; i++)
@@ -179,11 +293,15 @@ namespace GetSlabReinfResult.ViewModel
 
         private void chengedHendler(object s, ListChangedEventArgs e)
         {
-            SortList();
+            if(e.ListChangedType== ListChangedType.ItemAdded || e.ListChangedType == ListChangedType.ItemMoved)
+                SortList();
         }
         private void SortList()
         {
-            ListOfLagendItems = new BindingList<LegendItemViewModel>(_listOfLagendItems.OrderBy(x => x.Areg).ToList());
+            var QuickSort = new QuickSortLegendItem();
+            var a=QuickSort.SortList(ListOfLagendItems, 0, ListOfLagendItems.Count() - 1);
+            ListOfLagendItems = new BindingList<LegendItemViewModel>();
+            ListOfLagendItems = a;
             ListOfLagendItems.ListChanged += chengedHendler;
             ListOfLagendItems.AddingNew += AddNewItemHendler;
             Filter();
@@ -256,7 +374,7 @@ namespace GetSlabReinfResult.ViewModel
                     Description="Ø20/15cm"
                 },
             };
-            var r = new Random();
+
             ///Adding min
             ListOfLagendItems.Add(new LegendItemViewModel
             {
@@ -280,7 +398,8 @@ namespace GetSlabReinfResult.ViewModel
             });
 
             SortList();
-            SetScaleColors();
+            GenerateColors();
+
         }
 
 

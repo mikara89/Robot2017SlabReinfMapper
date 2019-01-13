@@ -7,7 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-             xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel;assembly=GetSlabReinfResult"
+             xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
              d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
              mc:Ignorable="d" 
              
@@ -34,6 +34,25 @@
                           Command="{Binding ResetCommand}"/>
             </MenuItem>
         </Menu>
+        <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
+            <RadioButton Content="Random" x:Name="firstRadioButton"
+                                     Padding="0,0,10,0"
+                                     IsChecked="{Binding ScaleType, 
+                            Converter={StaticResource ConvertScaleTypeToInt},  
+                            ConverterParameter='0'}"/>
+            <RadioButton Content="HeatMap" 
+                                     Padding="0,0,10,0" 
+                                     IsChecked="{Binding ScaleType, 
+                            Converter={StaticResource ConvertScaleTypeToInt},  
+                            ConverterParameter='1'}"/>
+            <RadioButton Content="5Colors" 
+                                     Padding="0,0,10,0" 
+                                     IsChecked="{Binding ScaleType, 
+                            Converter={StaticResource ConvertScaleTypeToInt} ,  
+                            ConverterParameter='2'}"/>
+
+        </StackPanel>
         <DataGrid   
             HorizontalAlignment="Center"
             x:Name="dataGrid"
@@ -65,14 +84,15 @@
             <DataGrid.Columns>
 
                 <DataGridTextColumn Width="Auto" 
-                                Binding="{Binding Description,Mode=TwoWay}"
+                                    Binding="{Binding Description,Mode=TwoWay}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                     ElementStyle="{StaticResource CellText}"
-                                Header="Description"/>
+                                    Header="Description"/>
 
                 <DataGridTextColumn Width="80"  
                                     ElementStyle="{StaticResource CellText}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
+                                    
                                 Binding="{Binding Areg,Mode=TwoWay}"
                                 Header="Areg">
                 </DataGridTextColumn>
