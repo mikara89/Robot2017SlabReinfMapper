@@ -8,6 +8,7 @@
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
         xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
         xmlns:validation="clr-namespace:GetSlabReinfResult.Validation"
+        xmlns:convert="clr-namespace:GetSlabReinfResult.Converter"
         mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
         Title="RobotSlabReinfMapper" 
 
@@ -21,6 +22,20 @@
         <res:MainWindowModelView/>
     </Window.DataContext>
     <Window.Resources>
+        <convert:ConvertColorToSolidColorBrush x:Key="ConvertColorToSolidColorBrush"/>
+        <convert:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <convert:BooleanToHeightConverter x:Key="BooleanToHeightConverter"/>
+        <convert:ConvertATypeToEnumAType x:Key="ConvertATypeToEnumAType"/>
+        <convert:PathMultiValueConverter x:Key="PathMultiValueConverter"/>
+        <convert:BooleanToHeightMultiConverter x:Key="BooleanToHeightMultiConverter"/>
+        <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
+        <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
+        <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
+        <convert:ConvertDrawingAsTypeToEnumAType x:Key="ConvertDrawingAsTypeToEnumAType"/>
+        <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
+        <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
+        <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+        <convert:ConvertScaleTypeToInt x:Key="ConvertScaleTypeToInt"/>
         <Style TargetType="RadioButton">
             <Setter Property="Validation.ErrorTemplate">
                 <Setter.Value>

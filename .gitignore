@@ -5,6 +5,7 @@
 /.vs/GetSlabReinfResult/v15/Server/sqlite3
 /.vs/GetSlabReinfResult/v15
 /Robot2017SlabReinfMapper_Setup
+/RobotSlabReinfMapperAddIn
 bin
 obj
 /GetSlabReinfResult.UnitTest/bin

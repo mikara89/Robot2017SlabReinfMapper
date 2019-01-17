@@ -8,15 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace RobotSlabReinfMapperAddIn
+namespace GetSlabReinfResult
 {
 
 
     [ComVisible(true)]
-    [Guid("572b93b1-2b95-47b4-8fa9-6db05bef5de3")]
-    [ClassInterface(ClassInterfaceType.None)]
-    [ProgId("RobotSlabReinfMapperAddIn.Class1")]
-    public class Class1 : IRobotAddIn, IClass1
+    [Guid("195821f7-a8f3-44bf-8e89-5b69839536ab")]
+    public class Class1 : IRobotAddIn
     {
         private IRobotApplication iapp = null;
 
@@ -24,7 +22,7 @@ namespace RobotSlabReinfMapperAddIn
         {
             throw new NotImplementedException();
         }
-
+         
         
 
         public bool Connect(RobotApplication robot_app, int add_in_id, bool first_time)
@@ -35,7 +33,7 @@ namespace RobotSlabReinfMapperAddIn
 
         public int InstallCommands(RobotCmdList cmd_list)
         {
-            cmd_list.New(1, "My Command 1"); // Text in Robot menu
+            cmd_list.New(1, "Export reinforcement to .dxf"); // Text in Robot menu
             return cmd_list.Count;
         }
 
@@ -46,18 +44,16 @@ namespace RobotSlabReinfMapperAddIn
         }
         public void DoCommand(int cmd_id)
         {
-            MessageBox.Show("App will run now4!");
-            App app = new App();
-            app.InitializeComponent();
-            app.Run();
-            //var w = new MainWindow();
-            //w.ShowDialog();
+            switch (cmd_id)
+            {
+                case 1:
+                    var w = new MainWindow();
+                    w.ShowDialog();
+                    break;
+                default:
+                    break;
+            }
+            
         }
-    }
-    [ComVisible(true)]
-    [Guid("67F6AA4C-A9A5-4682-98F9-15BDF2246A74")]
-    [InterfaceType(ComInterfaceType.InterfaceIsDual)]
-    internal interface IClass1
-    {
     }
 }

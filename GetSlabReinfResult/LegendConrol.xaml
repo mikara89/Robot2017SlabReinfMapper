@@ -8,12 +8,27 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:core="using:Microsoft.Xaml.Interactions.Core"
              xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
+             xmlns:convert="clr-namespace:GetSlabReinfResult.Converter"
              d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
              mc:Ignorable="d" 
              
              d:DesignHeight="450" d:DesignWidth="250">
     <UserControl.Resources>
 
+        <convert:ConvertColorToSolidColorBrush x:Key="ConvertColorToSolidColorBrush"/>
+        <convert:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <convert:BooleanToHeightConverter x:Key="BooleanToHeightConverter"/>
+        <convert:ConvertATypeToEnumAType x:Key="ConvertATypeToEnumAType"/>
+        <convert:PathMultiValueConverter x:Key="PathMultiValueConverter"/>
+        <convert:BooleanToHeightMultiConverter x:Key="BooleanToHeightMultiConverter"/>
+        <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
+        <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
+        <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
+        <convert:ConvertDrawingAsTypeToEnumAType x:Key="ConvertDrawingAsTypeToEnumAType"/>
+        <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
+        <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
+        <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+        <convert:ConvertScaleTypeToInt x:Key="ConvertScaleTypeToInt"/>
         <Style x:Key="CellText" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
