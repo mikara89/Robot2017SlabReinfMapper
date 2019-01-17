@@ -39,12 +39,16 @@ namespace GetSlabReinfResult.ViewModel
         private bool _isDrawing;
 
         public MainWindowModelView()
-        {}
+        {
+            WinForms.MessageBox.Show("Test");
+        }
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
         public ICommand GetDataCommand => 
             new ActionCommand(async prg =>{
+                if (String.IsNullOrEmpty(SlabNumb) || String.IsNullOrEmpty(SlabNumb))
+                    return;
                 if (SlabNumb.ToLower() == "fake")
                     await GetDataAsyncFake();
                 else await GetDataAsync();
