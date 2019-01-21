@@ -2,41 +2,28 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GetSlabReinfResult"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
              xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
-             xmlns:convert="clr-namespace:GetSlabReinfResult.Converter"
              d:DataContext="{x:Static res:DesignLegendViewModel.Instanc}"
              mc:Ignorable="d" 
              
              d:DesignHeight="450" d:DesignWidth="250">
     <UserControl.Resources>
-
-        <convert:ConvertColorToSolidColorBrush x:Key="ConvertColorToSolidColorBrush"/>
-        <convert:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <convert:BooleanToHeightConverter x:Key="BooleanToHeightConverter"/>
-        <convert:ConvertATypeToEnumAType x:Key="ConvertATypeToEnumAType"/>
-        <convert:PathMultiValueConverter x:Key="PathMultiValueConverter"/>
-        <convert:BooleanToHeightMultiConverter x:Key="BooleanToHeightMultiConverter"/>
-        <convert:IgnoreFirstItemConverter x:Key="IgnoreFirstItemConverter"/>
-        <convert:EnableEditItemConverter x:Key="EnableEditItemConverter"/>
-        <convert:IsTrueIfNotNullConverter x:Key="IsTrueIfNotNullConverter"/>
-        <convert:ConvertDrawingAsTypeToEnumAType x:Key="ConvertDrawingAsTypeToEnumAType"/>
-        <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
-        <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
-        <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
-        <convert:ConvertScaleTypeToInt x:Key="ConvertScaleTypeToInt"/>
-        <Style x:Key="CellText" TargetType="TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
-        <Style x:Key="HeaderCellText" TargetType="DataGridColumnHeader">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="CellText" TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+            <Style x:Key="HeaderCellText" TargetType="DataGridColumnHeader">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
         <Menu>
@@ -79,7 +66,8 @@
             Width="Auto">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectedCellsChanged" >
-                    <i:InvokeCommandAction Command="{Binding CellEditedCommand}" />
+                    <i:InvokeCommandAction Command="{Binding CellEditedCommand}" 
+                                           x:Name="interactivityFix" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <DataGrid.RowStyle>
@@ -104,7 +92,7 @@
                                     ElementStyle="{StaticResource CellText}"
                                     Header="Description"/>
 
-                <DataGridTextColumn Width="80"  
+                <DataGridTextColumn Width="80"   
                                     ElementStyle="{StaticResource CellText}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                     
@@ -116,10 +104,11 @@
                                         HeaderStyle="{StaticResource HeaderCellText}"
                                         Width="50"  >
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:Name="dtFix">
                             <xctk:ColorPicker Height="20" 
-                        SelectedColor="{Binding Color, Mode=TwoWay,
-                            UpdateSourceTrigger=PropertyChanged}"/>
+                                              SelectedColor="{Binding Color, Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}" 
+                                              x:Name="colorPickerFix" />     
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

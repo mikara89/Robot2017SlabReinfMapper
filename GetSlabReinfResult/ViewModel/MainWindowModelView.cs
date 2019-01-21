@@ -15,11 +15,11 @@ namespace GetSlabReinfResult.ViewModel
 {
     public class MainWindowModelView : BaseViewModel
     {
-        //public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
-        //{
-        //    legendViewModel = DesignLegendViewModel.Instanc,
-        //    //IsCollectorDone = true, 
-        //};
+        public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
+        {
+            legendViewModel = DesignLegendViewModel.Instanc,
+            IsCollectorDone = true, 
+        };
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
@@ -39,9 +39,7 @@ namespace GetSlabReinfResult.ViewModel
         private bool _isDrawing;
 
         public MainWindowModelView()
-        {
-            WinForms.MessageBox.Show("Test");
-        }
+        {}
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
@@ -239,7 +237,7 @@ namespace GetSlabReinfResult.ViewModel
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
 
-                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection());
+                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(),Services.RobotAppService.iapp);
                 await task.StartAsync(prg, ct);
 
                 if (!ct.IsCancellationRequested)

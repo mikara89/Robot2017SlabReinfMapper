@@ -1,18 +1,15 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace GetSlabReinfResult
 {
+    /// <summary>
+    /// Interaction logic for ModalWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     {
-
-        public MainWindow()
+        public MainWindow() 
         {
             InitializeComponent();
-            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
-            {
-                MessageBox.Show("Error App:" + e.ExceptionObject);  
-            };
         }
     }
 }

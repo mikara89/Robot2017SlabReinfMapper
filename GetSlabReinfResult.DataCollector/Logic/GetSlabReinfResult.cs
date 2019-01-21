@@ -14,7 +14,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
     public class GetSlabReinfResult : IGetSlabReinfResult
     {
         public int[] ObjNumbers { get; set; }
-        private RobotApplication robot;
+        private IRobotApplication robot;
         private RobotStructure str;
         private readonly string panelPath;
         private readonly string edgesPath;
@@ -27,17 +27,17 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public List<Panel> PanelEdges { get; internal set; }
 
         #region Constructor
-    public GetSlabReinfResult(int[] ObjNumbers)
+    public GetSlabReinfResult(int[] ObjNumbers,IRobotApplication iapp=null)
         {
-            Init();
+            Init(iapp);
             Validatings(ObjNumbers);
             ValidatingOnSameZCoord(ObjNumbers);
             this.ObjNumbers = ObjNumbers;
         }
 
-        public GetSlabReinfResult()
+        public GetSlabReinfResult(IRobotApplication iapp = null)
         {
-            Init();
+            Init(iapp);
         }
 
         /// <summary>
@@ -52,9 +52,10 @@ namespace GetSlabReinfResult.DataCollector.Logic
             this.edgesPath = edgesPath;
         }
 
-        private void Init()
+        private void Init(IRobotApplication iapp)
         {
-            robot = new RobotApplication();
+            if (iapp != null) robot = iapp;
+            else robot = new RobotApplication();
             str = robot.Project.Structure;
             Panel = new List<RSA_FE>();
             PanelEdges = new List<Panel>();
@@ -200,6 +201,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
 
                 var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
+                //var eeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_ELEMENT); 
                 for (int x = 0; x < Panel.Count; x++)
                 {
                     if (ct.IsCancellationRequested) break;
