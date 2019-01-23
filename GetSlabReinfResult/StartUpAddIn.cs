@@ -50,7 +50,7 @@ namespace GetSlabReinfResult
             try
             {
                 w = new MainWindow();
-                w.ShowDialog(); 
+                w.Show(); 
             }
             catch (Exception ex)
             {
@@ -81,15 +81,6 @@ namespace GetSlabReinfResult
             }
         }
 
-        private IntPtr GetOwner()
-        {
-            System.Diagnostics.Process[] processes
-            = System.Diagnostics.Process.GetProcessesByName("Robot");
-
-
-            return processes[0].MainWindowHandle;
-
-        }
     }
 
 }

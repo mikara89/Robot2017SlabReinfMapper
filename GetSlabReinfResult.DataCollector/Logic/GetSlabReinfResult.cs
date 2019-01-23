@@ -328,6 +328,28 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         }
 
+        public string GetSlabSelection(string lastSelection) 
+        {
+
+            if (robot == null) return lastSelection;
+            try
+            {
+                string sel = robot
+                .Project
+                .Structure
+                .Selections
+                .Get(RobotOM.IRobotObjectType.I_OT_PANEL)
+                .ToText();
+                if (sel != lastSelection)
+                {
+                    return sel;
+                }
+            }
+            catch (Exception)
+            {}
+            return lastSelection;
+        }
+
         public void Dispose()
         {
             Panel = null;

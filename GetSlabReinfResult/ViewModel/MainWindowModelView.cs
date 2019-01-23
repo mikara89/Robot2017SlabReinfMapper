@@ -6,10 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
-using System.Windows.Controls;
 using GenerateIsolines;
 using System.IO;
+using System.Timers;
 
 namespace GetSlabReinfResult.ViewModel 
 {
@@ -37,9 +36,13 @@ namespace GetSlabReinfResult.ViewModel
         private double _SkipA=0;
         private double _Height=200;
         private bool _isDrawing;
+        private System.Timers.Timer aTimer;
 
         public MainWindowModelView()
-        {}
+        {
+            SlabNumb = "";
+            task = new DataCollector.Logic.GetSlabReinfResult(Services.RobotAppService.iapp);
+        }
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
@@ -116,7 +119,7 @@ namespace GetSlabReinfResult.ViewModel
                 OnPropertyChanged(nameof(IsDrawing));
             }
         }
-
+        public bool Focus { get; set; }
         public string Filename
         {
             get { return _filename; }
@@ -319,6 +322,28 @@ namespace GetSlabReinfResult.ViewModel
             ProgressString = obj.ProgressToString;
             Progress = Convert.ToInt32(obj.Progress);
             CountedObj = Convert.ToInt32(obj.MaxValue);
+        }
+
+        public void InitSelectionMonitoring()
+        {
+            if (!Focus)
+            {
+                aTimer = new System.Timers.Timer();
+                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                aTimer.Interval = 300;
+                aTimer.Enabled = true;
+            }
+            else if (Focus && aTimer != null)
+            {
+                aTimer.Dispose();
+                aTimer = null;
+            }
+        }
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            if(!Focus)
+                SlabNumb =task.GetSlabSelection(SlabNumb);
         }
     }
 }
