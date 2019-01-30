@@ -110,8 +110,8 @@ namespace GetSlabReinfResult.DataCollector.Logic
             IProgress<ProgressModelObject<double>> progress,
             CancellationToken ct)
         {
-            RobotApplication RobApp;
-            RobApp = new RobotApplication();
+            IRobotApplication RobApp;
+            RobApp = Services.RobotAppService.iapp;
             RobotTable t;
             RobotTableFrame tf;
 
@@ -147,7 +147,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
             progress.Report(new ProgressModelObject<double> { ProgressToString = "Writting rows to temp file...", Progress = 4 * plus });
             a.Printable.SaveToFile(temp, IRobotOutputFileFormat.I_OFF_TEXT);
 
-            RobApp = null;
         }
     }
 }

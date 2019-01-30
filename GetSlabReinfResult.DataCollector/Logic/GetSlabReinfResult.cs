@@ -29,6 +29,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         #region Constructor
     public GetSlabReinfResult(int[] ObjNumbers,IRobotApplication iapp=null)
         {
+            Services.RobotAppService.iapp = iapp;
             Init(iapp);
             Validatings(ObjNumbers);
             ValidatingOnSameZCoord(ObjNumbers);
@@ -37,6 +38,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         public GetSlabReinfResult(IRobotApplication iapp = null)
         {
+            Services.RobotAppService.iapp = iapp;
             Init(iapp);
         }
 
@@ -170,14 +172,8 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
 
             var t = new RSATableQueryingResult();
-
-
             Panel = t.ReadFromTable(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
-
-            var notUniq = Panel.GroupBy(x => x.FE_ID)
-              .Where(g => g.Count() > 1)
-              .Select(y => y.Key)
-              .ToList();
+            
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
             Res = robot.Project.Structure.Results.Query(parm, RobResRowSet);
@@ -244,8 +240,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 if (!ct.IsCancellationRequested) ValidatingOnSameZCoord(ObjNumbers);
                 if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
                 QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+                
             }, ct);
-            if (IsDataCollected) SaveToJson();
+
         }
         #endregion
 
@@ -326,28 +323,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 else throw new Exception($"File missing : {edgesPath}");
             });
 
-        }
-
-        public string GetSlabSelection(string lastSelection) 
-        {
-
-            if (robot == null) return lastSelection;
-            try
-            {
-                string sel = robot
-                .Project
-                .Structure
-                .Selections
-                .Get(RobotOM.IRobotObjectType.I_OT_PANEL)
-                .ToText();
-                if (sel != lastSelection)
-                {
-                    return sel;
-                }
-            }
-            catch (Exception)
-            {}
-            return lastSelection;
         }
 
         public void Dispose()

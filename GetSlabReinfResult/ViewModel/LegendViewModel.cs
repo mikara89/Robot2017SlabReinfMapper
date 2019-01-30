@@ -71,7 +71,7 @@ namespace GetSlabReinfResult.ViewModel
                     Color = Colors.Red,
                 },
             };
-            ScaleType = 1;
+            ScaleType = 2;
         }
 
         public static DesignLegendViewModel Instanc => new DesignLegendViewModel(30,0);
@@ -168,7 +168,7 @@ namespace GetSlabReinfResult.ViewModel
             this.MaxA = MaxA;
             this.MinA = MinA;
             this.SkipA = SkipA;
-            ScaleType = 1;
+            ScaleType = 2;
             PopulateTableDefault();
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace GetSlabReinfResult
 {
@@ -7,28 +8,29 @@ namespace GetSlabReinfResult
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        public ViewModel.MainWindowModelView vm
+        {
+            get => DataContext as ViewModel.MainWindowModelView;
+            set => DataContext = value;
+        }
         public MainWindow() 
         {
+            DataContext = new ViewModel.MainWindowModelView();
             InitializeComponent();
             this.Deactivated += Window_Deactivated;
             this.Activated += (s, e) =>
              {
-                 (DataContext as ViewModel.MainWindowModelView).Focus = !(DataContext as ViewModel.MainWindowModelView).Focus;
-                 (DataContext as ViewModel.MainWindowModelView).InitSelectionMonitoring();
+                 vm.GetFocusedCommand.Execute(null);
                  txtBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.White);
-
              };
-
         }
-
+        
         private void Window_Deactivated(object sender, System.EventArgs e)
         {
-            (DataContext as ViewModel.MainWindowModelView).Focus = false;
-            (DataContext as ViewModel.MainWindowModelView).InitSelectionMonitoring();
             Window window = (Window)sender;
             window.Topmost = true;
             txtBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LawnGreen);
+            vm.LostFocusedCommand.Execute(null);
         }
     }
 }

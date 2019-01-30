@@ -12,13 +12,14 @@ using System.Timers;
 
 namespace GetSlabReinfResult.ViewModel 
 {
-    public class MainWindowModelView : BaseViewModel
+    public class MainWindowModelView : BaseViewModel,IDisposable
     {
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
             legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone = true, 
+            IsCollectorDone = false, 
         };
+
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
@@ -36,12 +37,14 @@ namespace GetSlabReinfResult.ViewModel
         private double _SkipA=0;
         private double _Height=200;
         private bool _isDrawing;
+        private bool _isVisible=true;
         private System.Timers.Timer aTimer;
 
         public MainWindowModelView()
         {
             SlabNumb = "";
-            task = new DataCollector.Logic.GetSlabReinfResult(Services.RobotAppService.iapp);
+            robotSelections = new RobotSelections(Services.RobotAppService.iapp);
+            InitSelectionMonitoring();
         }
 
         public ICommand CancelCommand => 
@@ -58,6 +61,14 @@ namespace GetSlabReinfResult.ViewModel
             new ActionCommand(async prg => { IsDrawing = true; await DrawAsync(); IsDrawing = false; });
         public ICommand GetFilePathCommand =>
             new ActionCommand(prg => { GetFilePath(); });
+        public ICommand GetFocusedCommand =>
+            new ActionCommand(prg => {
+                //ProgressString = "EventRemoved";
+                AddOrRemoveElapsedEventHandler(false); });
+        public ICommand LostFocusedCommand => 
+            new ActionCommand(prg => {
+                //ProgressString = "EventAdded";
+                AddOrRemoveElapsedEventHandler(true); });
 
         private void GetFilePath()
         {
@@ -66,7 +77,18 @@ namespace GetSlabReinfResult.ViewModel
                 FilePath = dialog.SelectedPath;
         }
 
-        
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (value != _isVisible)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
         public double SkipA
         {
             get { return _SkipA; }
@@ -119,7 +141,6 @@ namespace GetSlabReinfResult.ViewModel
                 OnPropertyChanged(nameof(IsDrawing));
             }
         }
-        public bool Focus { get; set; }
         public string Filename
         {
             get { return _filename; }
@@ -143,6 +164,9 @@ namespace GetSlabReinfResult.ViewModel
                 Reset();
                 OnPropertyChanged(nameof(SlabNumb)); }
         }
+
+        private readonly IRobotSelections robotSelections;
+
         public int Progress
         {
             get { return _Progress; } 
@@ -290,7 +314,10 @@ namespace GetSlabReinfResult.ViewModel
                     IsCollectorDone = true;
                 }
                 if (ct.IsCancellationRequested)
+                {
                     IsCollectorDone = false;
+                }
+                    
             }
             catch (Exception ex)
             {
@@ -326,24 +353,30 @@ namespace GetSlabReinfResult.ViewModel
 
         public void InitSelectionMonitoring()
         {
-            if (!Focus)
+            aTimer = new System.Timers.Timer();
+            aTimer.Interval = 100;
+            aTimer.Enabled = true;
+        }
+        private void AddOrRemoveElapsedEventHandler(bool active)
+        {
+            if (active)
             {
-                aTimer = new System.Timers.Timer();
-                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-                aTimer.Interval = 300;
-                aTimer.Enabled = true;
+                if(Progress == 0)
+                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             }
-            else if (Focus && aTimer != null)
+            else
             {
-                aTimer.Dispose();
-                aTimer = null;
+                aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
             }
         }
-
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            if(!Focus)
-                SlabNumb =task.GetSlabSelection(SlabNumb);
+            SlabNumb = robotSelections.GetSlabSelection(SlabNumb).Trim();
+        }
+        public void Dispose()
+        {
+            aTimer.Dispose();
+            aTimer = null;
         }
     }
 }
