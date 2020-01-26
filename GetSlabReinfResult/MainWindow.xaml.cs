@@ -1,35 +1,36 @@
-﻿
-//using GetSlabReinfResult.Logic;
-using GetSlabReinfResult.DataCollector.Logic;
-using GetSlabReinfResult.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace GetSlabReinfResult
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ModalWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        public MainWindow()
+        public ViewModel.MainWindowModelView vm
         {
+            get => DataContext as ViewModel.MainWindowModelView;
+            set => DataContext = value;
+        }
+        public MainWindow() 
+        {
+            DataContext = new ViewModel.MainWindowModelView();
             InitializeComponent();
+            this.Deactivated += Window_Deactivated;
+            this.Activated += (s, e) =>
+             {
+                 vm.GetFocusedCommand.Execute(null);
+                 txtBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.White);
+             };
+        }
+        
+        private void Window_Deactivated(object sender, System.EventArgs e)
+        {
+            Window window = (Window)sender;
+            window.Topmost = true;
+            txtBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LawnGreen);
+            vm.LostFocusedCommand.Execute(null);
         }
     }
 }
