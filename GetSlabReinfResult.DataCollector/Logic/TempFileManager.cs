@@ -36,6 +36,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         public static void DeleteTmpFile(string tmpFile)
         {
+            if (string.IsNullOrEmpty(tmpFile))
+            {
+                return;
+            }
+
             try
             {
                 // Delete the temp file (if it exists)

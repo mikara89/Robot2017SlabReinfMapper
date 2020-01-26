@@ -29,7 +29,8 @@ namespace GetSlabReinfResult
             Services.RobotAppService.iapp = robot_app;
             InitAddAssembly();
             return true;
-        }
+        }
+
 
         public int InstallCommands(RobotCmdList cmd_list)
         {
@@ -43,7 +44,8 @@ namespace GetSlabReinfResult
             w = null;
             Services.RobotAppService.iapp = null;
             return true;
-        }
+        }
+
         public void DoCommand(int cmd_id)
         {
 

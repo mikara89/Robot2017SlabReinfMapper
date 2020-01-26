@@ -18,6 +18,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         private RobotStructure str;
         private readonly string panelPath;
         private readonly string edgesPath;
+        private readonly CancellationToken ct;
 
         public bool IsDataCollected { get; internal set; }
 
@@ -27,13 +28,14 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public List<Panel> PanelEdges { get; internal set; }
 
         #region Constructor
-    public GetSlabReinfResult(int[] ObjNumbers,IRobotApplication iapp=null)
+    public GetSlabReinfResult(int[] ObjNumbers, CancellationToken ct,IRobotApplication iapp=null)
         {
             Services.RobotAppService.iapp = iapp;
             Init(iapp);
             Validatings(ObjNumbers);
             ValidatingOnSameZCoord(ObjNumbers);
             this.ObjNumbers = ObjNumbers;
+            this.ct = ct;
         }
 
         public GetSlabReinfResult(IRobotApplication iapp = null)
@@ -68,6 +70,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         #region Validate
         public virtual void Validating(int ObjNumber)
         {
+            if (ct.IsCancellationRequested) return;
             var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
             if (slab == null)
                 throw new Exception($"Slab with number {ObjNumber} don't exist.");
@@ -78,6 +81,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         private void Validatings(int[] ObjNumbers)
         {
+            if (ct.IsCancellationRequested) return;
             foreach (var objNumber in ObjNumbers)
             {
                 Validating(objNumber);
@@ -89,6 +93,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             var toRemove = new List<int>();
             var slabsNodes = new List<FE>();
             var s = new FE { };
+            if (ct.IsCancellationRequested) return;
             foreach (var slabNumber in ObjNumbers)
             {
                 s = new FE();

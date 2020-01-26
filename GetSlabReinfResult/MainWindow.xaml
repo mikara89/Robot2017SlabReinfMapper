@@ -11,7 +11,7 @@
         xmlns:validation="clr-namespace:GetSlabReinfResult.Validation"
         mc:Ignorable="d" 
         d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
-        Title="RobotSlabReinfMapper" 
+        Title="RC Slab Mapper" 
         Height="Auto" 
         SizeToContent="Height"
         ResizeMode="NoResize"

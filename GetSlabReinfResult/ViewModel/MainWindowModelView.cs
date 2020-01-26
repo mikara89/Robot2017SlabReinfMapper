@@ -264,7 +264,7 @@ namespace GetSlabReinfResult.ViewModel
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
 
-                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(),Services.RobotAppService.iapp);
+                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(), ct, Services.RobotAppService.iapp);
                 await task.StartAsync(prg, ct);
 
                 if (!ct.IsCancellationRequested)

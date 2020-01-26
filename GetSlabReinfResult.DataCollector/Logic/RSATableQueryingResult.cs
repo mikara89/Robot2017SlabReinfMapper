@@ -23,8 +23,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
             var Plat = new List<RSA_FE>();
             try
             {
+                if (ct.IsCancellationRequested) return null;
                 GetAllFeFromSlab(ObjNumber, progress, ct);
-
+                
                 var t = ConvertCSVtoDataTable(temp);
 
                 progress.Report(new ProgressModelObject<double>
