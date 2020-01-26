@@ -212,3 +212,5 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 /Robot2017SlabReinfMapper_Setup
+/.vs/GetSlabReinfResult/v16/Server/sqlite3
+/RobotSlabReinfMapperAddIn/.vs/RobotSlabReinfMapperAddIn/v15/Server/sqlite3
