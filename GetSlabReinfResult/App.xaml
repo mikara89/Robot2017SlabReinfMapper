@@ -18,5 +18,6 @@
         <convert:NotNullToFalseConverter x:Key="NotNullToFalseConverter"/>
         <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
         <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+        <convert:ConvertScaleTypeToInt x:Key="ConvertScaleTypeToInt"/>
     </Application.Resources>
 </Application>

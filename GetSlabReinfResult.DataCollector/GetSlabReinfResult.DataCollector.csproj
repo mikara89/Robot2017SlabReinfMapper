@@ -30,11 +30,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>RobotMapperKey.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interop.RobotOM">
-      <HintPath>C:\Program Files\Autodesk\Autodesk Robot Structural Analysis Professional 2019\System\Exe\Interop.RobotOM.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -53,14 +58,17 @@
     <Compile Include="Logic\FE_TABLE_ROWS.cs" />
     <Compile Include="Logic\GetSlabReinfResult.cs" />
     <Compile Include="Logic\IGetSlabReinfResult.cs" />
+    <Compile Include="Logic\IRobotSelections.cs" />
     <Compile Include="Logic\IRSATableQueryingResult.cs" />
     <Compile Include="Logic\LoadSaveFromToTextFile.cs" />
     <Compile Include="Logic\MyExtensions.cs" />
     <Compile Include="Logic\ProgressModelObject.cs" />
+    <Compile Include="Logic\RobotSelections.cs" />
     <Compile Include="Logic\RSATableQueryingResult.cs" />
     <Compile Include="Logic\TempFileManager.cs" />
     <Compile Include="Logic\T_DATA_TYPES.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\RobotAppService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenerateIsolines\GenerateIsolines.csproj">
@@ -70,6 +78,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="RobotMapperKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="RobotOM">
+      <Guid>{F3A37BD0-AA2D-11D2-9844-0080C86BE4DF}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

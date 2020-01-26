@@ -6,20 +6,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
-using System.Windows.Controls;
 using GenerateIsolines;
 using System.IO;
+using System.Timers;
 
 namespace GetSlabReinfResult.ViewModel 
 {
-    public class MainWindowModelView : BaseViewModel
+    public class MainWindowModelView : BaseViewModel,IDisposable
     {
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
             legendViewModel = DesignLegendViewModel.Instanc,
-            IsCollectorDone = true, 
+            IsCollectorDone = false, 
         };
+
 
         private LegendViewModel _legendViewModel;
         private CancellationTokenSource ts;
@@ -37,14 +37,22 @@ namespace GetSlabReinfResult.ViewModel
         private double _SkipA=0;
         private double _Height=200;
         private bool _isDrawing;
+        private bool _isVisible=true;
+        private System.Timers.Timer aTimer;
 
         public MainWindowModelView()
-        {}
+        {
+            SlabNumb = "";
+            robotSelections = new RobotSelections(Services.RobotAppService.iapp);
+            InitSelectionMonitoring();
+        }
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
         public ICommand GetDataCommand => 
             new ActionCommand(async prg =>{
+                if (String.IsNullOrEmpty(SlabNumb) || String.IsNullOrEmpty(SlabNumb))
+                    return;
                 if (SlabNumb.ToLower() == "fake")
                     await GetDataAsyncFake();
                 else await GetDataAsync();
@@ -53,6 +61,14 @@ namespace GetSlabReinfResult.ViewModel
             new ActionCommand(async prg => { IsDrawing = true; await DrawAsync(); IsDrawing = false; });
         public ICommand GetFilePathCommand =>
             new ActionCommand(prg => { GetFilePath(); });
+        public ICommand GetFocusedCommand =>
+            new ActionCommand(prg => {
+                //ProgressString = "EventRemoved";
+                AddOrRemoveElapsedEventHandler(false); });
+        public ICommand LostFocusedCommand => 
+            new ActionCommand(prg => {
+                //ProgressString = "EventAdded";
+                AddOrRemoveElapsedEventHandler(true); });
 
         private void GetFilePath()
         {
@@ -61,7 +77,18 @@ namespace GetSlabReinfResult.ViewModel
                 FilePath = dialog.SelectedPath;
         }
 
-        
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (value != _isVisible)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
         public double SkipA
         {
             get { return _SkipA; }
@@ -114,7 +141,6 @@ namespace GetSlabReinfResult.ViewModel
                 OnPropertyChanged(nameof(IsDrawing));
             }
         }
-
         public string Filename
         {
             get { return _filename; }
@@ -138,6 +164,9 @@ namespace GetSlabReinfResult.ViewModel
                 Reset();
                 OnPropertyChanged(nameof(SlabNumb)); }
         }
+
+        private readonly IRobotSelections robotSelections;
+
         public int Progress
         {
             get { return _Progress; } 
@@ -205,7 +234,7 @@ namespace GetSlabReinfResult.ViewModel
                 new GenerateIsolines.Model.LegendItem
                 {
                     Areg = x.Areg,
-                    Color = new RSAColor(x.Color.R, x.Color.G, x.Color.B, x.Color.A),
+                    Color = new RSAColor(x.Color.R, x.Color.B, x.Color.G, x.Color.A),
                     Discription = x.Description,
                     
                 }));
@@ -235,7 +264,7 @@ namespace GetSlabReinfResult.ViewModel
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
 
-                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection());
+                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(), ct, Services.RobotAppService.iapp);
                 await task.StartAsync(prg, ct);
 
                 if (!ct.IsCancellationRequested)
@@ -285,7 +314,10 @@ namespace GetSlabReinfResult.ViewModel
                     IsCollectorDone = true;
                 }
                 if (ct.IsCancellationRequested)
+                {
                     IsCollectorDone = false;
+                }
+                    
             }
             catch (Exception ex)
             {
@@ -317,6 +349,34 @@ namespace GetSlabReinfResult.ViewModel
             ProgressString = obj.ProgressToString;
             Progress = Convert.ToInt32(obj.Progress);
             CountedObj = Convert.ToInt32(obj.MaxValue);
+        }
+
+        public void InitSelectionMonitoring()
+        {
+            aTimer = new System.Timers.Timer();
+            aTimer.Interval = 100;
+            aTimer.Enabled = true;
+        }
+        private void AddOrRemoveElapsedEventHandler(bool active)
+        {
+            if (active)
+            {
+                if(Progress == 0)
+                    aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            }
+            else
+            {
+                aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
+            }
+        }
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            SlabNumb = robotSelections.GetSlabSelection(SlabNumb).Trim();
+        }
+        public void Dispose()
+        {
+            aTimer.Dispose();
+            aTimer = null;
         }
     }
 }

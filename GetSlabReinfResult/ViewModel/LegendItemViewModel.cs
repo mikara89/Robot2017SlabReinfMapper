@@ -9,6 +9,10 @@ namespace GetSlabReinfResult.ViewModel
         private double _areg;
         private Color _color;
 
+        public LegendItemViewModel()
+        {
+
+        }
         public string Description
         {
             get => _discription;

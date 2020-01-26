@@ -14,10 +14,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
     public class GetSlabReinfResult : IGetSlabReinfResult
     {
         public int[] ObjNumbers { get; set; }
-        private RobotApplication robot;
+        private IRobotApplication robot;
         private RobotStructure str;
         private readonly string panelPath;
         private readonly string edgesPath;
+        private readonly CancellationToken ct;
 
         public bool IsDataCollected { get; internal set; }
 
@@ -27,17 +28,20 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public List<Panel> PanelEdges { get; internal set; }
 
         #region Constructor
-    public GetSlabReinfResult(int[] ObjNumbers)
+    public GetSlabReinfResult(int[] ObjNumbers, CancellationToken ct,IRobotApplication iapp=null)
         {
-            Init();
+            Services.RobotAppService.iapp = iapp;
+            Init(iapp);
             Validatings(ObjNumbers);
             ValidatingOnSameZCoord(ObjNumbers);
             this.ObjNumbers = ObjNumbers;
+            this.ct = ct;
         }
 
-        public GetSlabReinfResult()
+        public GetSlabReinfResult(IRobotApplication iapp = null)
         {
-            Init();
+            Services.RobotAppService.iapp = iapp;
+            Init(iapp);
         }
 
         /// <summary>
@@ -52,9 +56,10 @@ namespace GetSlabReinfResult.DataCollector.Logic
             this.edgesPath = edgesPath;
         }
 
-        private void Init()
+        private void Init(IRobotApplication iapp)
         {
-            robot = new RobotApplication();
+            if (iapp != null) robot = iapp;
+            else robot = new RobotApplication();
             str = robot.Project.Structure;
             Panel = new List<RSA_FE>();
             PanelEdges = new List<Panel>();
@@ -65,6 +70,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         #region Validate
         public virtual void Validating(int ObjNumber)
         {
+            if (ct.IsCancellationRequested) return;
             var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
             if (slab == null)
                 throw new Exception($"Slab with number {ObjNumber} don't exist.");
@@ -75,6 +81,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         private void Validatings(int[] ObjNumbers)
         {
+            if (ct.IsCancellationRequested) return;
             foreach (var objNumber in ObjNumbers)
             {
                 Validating(objNumber);
@@ -86,6 +93,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             var toRemove = new List<int>();
             var slabsNodes = new List<FE>();
             var s = new FE { };
+            if (ct.IsCancellationRequested) return;
             foreach (var slabNumber in ObjNumbers)
             {
                 s = new FE();
@@ -169,14 +177,8 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
 
             var t = new RSATableQueryingResult();
-
-
             Panel = t.ReadFromTable(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
-
-            var notUniq = Panel.GroupBy(x => x.FE_ID)
-              .Where(g => g.Count() > 1)
-              .Select(y => y.Key)
-              .ToList();
+            
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
             Res = robot.Project.Structure.Results.Query(parm, RobResRowSet);
@@ -200,6 +202,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
 
                 var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
+                //var eeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_ELEMENT); 
                 for (int x = 0; x < Panel.Count; x++)
                 {
                     if (ct.IsCancellationRequested) break;
@@ -242,8 +245,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 if (!ct.IsCancellationRequested) ValidatingOnSameZCoord(ObjNumbers);
                 if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
                 QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+                
             }, ct);
-            if (IsDataCollected) SaveToJson();
+
         }
         #endregion
 

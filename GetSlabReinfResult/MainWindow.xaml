@@ -5,36 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GetSlabReinfResult" 
         x:Name="window"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:res="clr-namespace:GetSlabReinfResult.ViewModel"
         xmlns:controler="clr-namespace:GetSlabReinfResult.Controler"
         xmlns:validation="clr-namespace:GetSlabReinfResult.Validation"
-        mc:Ignorable="d" d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
-        Title="RobotSlabReinfMapper" 
-
+        mc:Ignorable="d" 
+        d:DataContext="{x:Static res:MainWindowModelView.DesignInstance}"
+        Title="RC Slab Mapper" 
         Height="Auto" 
         SizeToContent="Height"
         ResizeMode="NoResize"
         Width="327.5"
         MinWidth="327.5"
         MaxWidth="327.5">
-    <Window.DataContext>
-        <res:MainWindowModelView/>
-    </Window.DataContext>
+
     <Window.Resources>
-        <Style TargetType="RadioButton">
-            <Setter Property="Validation.ErrorTemplate">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <DockPanel>
-                            <Border BorderBrush="Transparent" BorderThickness="0">
-                                <AdornedElementPlaceholder/>
-                            </Border>
-                        </DockPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="RadioButton">
+                <Setter Property="Validation.ErrorTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <DockPanel>
+                                <Border BorderBrush="Transparent" BorderThickness="0">
+                                    <AdornedElementPlaceholder/>
+                                </Border>
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
+    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -53,7 +58,9 @@
                 <TextBox x:Name="txtBox" Grid.Row="0"
                      Text="{Binding SlabNumb}"
                      Margin="10,5,10,10"
-                     />
+                     >
+
+                </TextBox>
             </StackPanel>
 
             <StackPanel Grid.Row="1"
@@ -96,6 +103,7 @@
                            HorizontalAlignment="Center" 
                            VerticalAlignment="Center"/>
             </Grid>
+            
         </Grid>
         <Grid Grid.Row="3" 
               x:Name="gridDraving"

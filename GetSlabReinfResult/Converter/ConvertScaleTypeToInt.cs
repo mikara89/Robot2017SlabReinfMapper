@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace GetSlabReinfResult.Converter
 {
-
-    public class ConvertATypeToEnumAType : IValueConverter
+    public class ConvertScaleTypeToInt : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is GenerateIsolines.A_Type)
+            if (value is int) 
             {
-                var val = (GenerateIsolines.A_Type)value;
-                var par = (parameter as string);
-                var r= GenerateIsolines.FE.GetA_TypeAsString(val) == par;
-                return GenerateIsolines.FE.GetA_TypeAsString(val) == par;
+                var val = (int)value;
+                
+                int par;
+                int.TryParse((string)parameter, out par);
+                if (val == par) return true;
             }
-            return null;
-
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -26,11 +24,12 @@ namespace GetSlabReinfResult.Converter
             if (value is bool && (bool)value)
             {
                 var val = (bool)value;
-                var par = GenerateIsolines.FE.GetStringAsA_Type((string)parameter);
+                int par;
+                int.TryParse((string)parameter, out par);
                 return par;
             }
             return null;
         }
-      
+
     }
 }
