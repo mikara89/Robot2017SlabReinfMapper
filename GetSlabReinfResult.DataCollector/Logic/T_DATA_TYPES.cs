@@ -1,8 +1,5 @@
 ﻿namespace GetSlabReinfResult.DataCollector.Logic
 {
-
-    public partial class RSATableQueryingResult
-    {
         public enum T_DATA_TYPES
 
         {
@@ -6430,5 +6427,5 @@
             T_TYPES_MAXDATA
 
         };
-    }
+    
 }

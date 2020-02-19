@@ -13,7 +13,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         Task CreateDxfDrawingAsync(string filePath, A_Type a_Type, double SkipA, Legend legend, DrawAsType drawAsType = DrawAsType.SOLID);
         void GetSlabsEdges(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress);
-        void QueryResultsAndNodeCoord(string plate, IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
+        Task QueryResultsAndNodeCoord(string plate, IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
         Task StartAsync(IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
         Task StartFakeAsync(IProgress<ProgressModelObject<double>> progress, CancellationToken ct);
         //string GetSlabSelection(string lastSelection);

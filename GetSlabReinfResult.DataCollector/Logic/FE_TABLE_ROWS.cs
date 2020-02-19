@@ -1,8 +1,5 @@
 ﻿namespace GetSlabReinfResult.DataCollector.Logic
 {
-
-    public partial class RSATableQueryingResult
-    {
         enum FE_TABLE_ROWS :int
         {
             Elenents=0,
@@ -15,5 +12,5 @@
             Panel=7,
             ElementType=8
         }
-    }
+    
 }

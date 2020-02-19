@@ -71,6 +71,7 @@
                         Margin="5"
                         Padding="5"
                         TabIndex="0"
+                        IsEnabled="{Binding CanCollect}"
                         HorizontalAlignment="Right"
                         Command="{Binding GetDataCommand}">
                 </Button>
@@ -226,7 +227,7 @@
                                 Width="20" 
                                 HorizontalAlignment="Right"/>
                     </DockPanel>
-                    <Button Content="Draw" 
+                    <Button Content="Save as .dxf" 
                             TabIndex="3"
                             IsEnabled="{Binding ElementName=textSkipA,
                             Path=(Validation.Errors).CurrentItem ,

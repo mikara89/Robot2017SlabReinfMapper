@@ -39,6 +39,7 @@ namespace GetSlabReinfResult.ViewModel
         private bool _isDrawing;
         private bool _isVisible=true;
         private System.Timers.Timer aTimer;
+        private bool _canCollect=true;
 
         public MainWindowModelView()
         {
@@ -86,6 +87,18 @@ namespace GetSlabReinfResult.ViewModel
                 {
                     _isVisible = value;
                     OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
+        public bool CanCollect
+        {
+            get { return _canCollect; }
+            set
+            {
+                if (value != _canCollect)
+                {
+                    _canCollect = value;
+                    OnPropertyChanged(nameof(_canCollect));
                 }
             }
         }
@@ -256,6 +269,7 @@ namespace GetSlabReinfResult.ViewModel
         private async Task GetDataAsync()
         {
             IsCollectorDone = false;
+            CanCollect = false;
             try
             {
                 ts = new CancellationTokenSource();
@@ -265,15 +279,21 @@ namespace GetSlabReinfResult.ViewModel
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
 
                 task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(), ct, Services.RobotAppService.iapp);
+                
                 await task.StartAsync(prg, ct);
 
                 if (!ct.IsCancellationRequested)
                 {
                     SetLegend();
                     IsCollectorDone = true;
+                    CanCollect = true;
                 }
                 if (ct.IsCancellationRequested)
+                {
                     IsCollectorDone = false;
+                    CanCollect = true;
+                }
+                    
                
             }
             catch (Exception ex)

@@ -6,25 +6,38 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace GetSlabReinfResult.DataCollector.Logic
 {
 
-    public partial class RSATableQueryingResult : IRSATableQueryingResult
+    public class RSATableQueryingResult /*: IRSATableQueryingResult*/
     {
 
         private string temp;
         private double plus = 10;
 
-        public List<RSA_FE> ReadFromTable(int[] ObjNumber,
+        public async Task<List<RSA_FE>> ReadFromTableAsync(int[] ObjNumber,
+                                        IProgress<ProgressModelObject<double>> progress,
+                                        CancellationToken ct)
+        {
+            return await Task.Run(() =>
+             {
+                return  ReadFromTable(ObjNumber, progress, ct);
+             },ct);
+        }
+        
+
+            public List<RSA_FE> ReadFromTable(int[] ObjNumber,
                                         IProgress<ProgressModelObject<double>> progress,
                                         CancellationToken ct)
         {
             var Plat = new List<RSA_FE>();
+  
             try
             {
                 if (ct.IsCancellationRequested) return null;
-                GetAllFeFromSlab(ObjNumber, progress, ct);
+                GetAllFeFromSlab(ObjNumber, progress);
                 
                 var t = ConvertCSVtoDataTable(temp);
 
@@ -108,9 +121,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
         private void GetAllFeFromSlab(int[] ObjNumbers, 
-            IProgress<ProgressModelObject<double>> progress,
-            CancellationToken ct)
+            IProgress<ProgressModelObject<double>> progress)
         {
+
             IRobotApplication RobApp;
             RobApp = Services.RobotAppService.iapp;
             RobotTable t;
@@ -144,10 +157,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
             RobotTable a = tf.Get(2);
             progress.Report(new ProgressModelObject<double> { ProgressToString = "Creating temp file to store FE table...", Progress = 3 * plus });
             temp = TempFileManager.CreateTmpFile();
-            if (ct.IsCancellationRequested) return;
             progress.Report(new ProgressModelObject<double> { ProgressToString = "Writting rows to temp file...", Progress = 4 * plus });
-            a.Printable.SaveToFile(temp, IRobotOutputFileFormat.I_OFF_TEXT);
+
+                a.Printable.SaveToFile(temp, IRobotOutputFileFormat.I_OFF_TEXT);
 
         }
     }
+
 }

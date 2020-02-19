@@ -70,7 +70,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
         #region Validate
         public virtual void Validating(int ObjNumber)
         {
-            if (ct.IsCancellationRequested) return;
             var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
             if (slab == null)
                 throw new Exception($"Slab with number {ObjNumber} don't exist.");
@@ -81,7 +80,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         private void Validatings(int[] ObjNumbers)
         {
-            if (ct.IsCancellationRequested) return;
             foreach (var objNumber in ObjNumbers)
             {
                 Validating(objNumber);
@@ -93,7 +91,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             var toRemove = new List<int>();
             var slabsNodes = new List<FE>();
             var s = new FE { };
-            if (ct.IsCancellationRequested) return;
+
             foreach (var slabNumber in ObjNumbers)
             {
                 s = new FE();
@@ -148,7 +146,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
 
-        public virtual void QueryResultsAndNodeCoord(string plates,
+        public async Task QueryResultsAndNodeCoord(string plates,
             IProgress<ProgressModelObject<double>> progress,
             CancellationToken ct)
         {
@@ -177,7 +175,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
 
             var t = new RSATableQueryingResult();
-            Panel = t.ReadFromTable(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
+            Panel = await t.ReadFromTableAsync(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
             
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
@@ -186,9 +184,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
             int i = 0;
             ok = RobResRowSet.MoveFirst();
 
-            progress.Report(new ProgressModelObject<double>
-            { ProgressToString = "Getting reinforcements and node coordinations", Progress = 9 * 10 });
-
             if (ct.IsCancellationRequested)
             {
                 progress.Report(new ProgressModelObject<double>
@@ -196,19 +191,22 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 IsDataCollected = false;
                 return;
             }
+
+            progress.Report(new ProgressModelObject<double>
+            { ProgressToString = "Getting reinforcements and node coordinations", Progress = 9 * 10 });
+
+
             while (ok)
             {
-                if (ct.IsCancellationRequested) break;
+
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
 
                 var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
                 //var eeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_ELEMENT); 
                 for (int x = 0; x < Panel.Count; x++)
                 {
-                    if (ct.IsCancellationRequested) break;
                     for (int y = 0; y < Panel[x].nodes.Count; y++)
                     {
-                        if (ct.IsCancellationRequested) break;
                         if (Panel[x].nodes[y].NodeId == nodeId)
                         {
                             Panel[x].nodes[y].AX_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(3)) * 10000, 3);
@@ -244,9 +242,10 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 if (!ct.IsCancellationRequested) Validatings(ObjNumbers);
                 if (!ct.IsCancellationRequested) ValidatingOnSameZCoord(ObjNumbers);
                 if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
-                QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+                
                 
             }, ct);
+            await QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
 
         }
         #endregion
