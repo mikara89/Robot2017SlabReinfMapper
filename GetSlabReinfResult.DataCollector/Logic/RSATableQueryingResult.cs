@@ -3,7 +3,6 @@ using RobotOM;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -159,7 +158,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             temp = TempFileManager.CreateTmpFile();
             progress.Report(new ProgressModelObject<double> { ProgressToString = "Writting rows to temp file...", Progress = 4 * plus });
 
-                a.Printable.SaveToFile(temp, IRobotOutputFileFormat.I_OFF_TEXT);
+            a.Printable.SaveToFile(temp, IRobotOutputFileFormat.I_OFF_TEXT);
 
         }
     }

@@ -9,6 +9,7 @@ using System.Windows.Input;
 using GenerateIsolines;
 using System.IO;
 using System.Timers;
+using System.Collections.Generic;
 
 namespace GetSlabReinfResult.ViewModel 
 {
@@ -26,7 +27,7 @@ namespace GetSlabReinfResult.ViewModel
         private CancellationToken ct;
         private bool _isCollectorDone;
         private IGetSlabReinfResult task;
-        private string _FilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) ;
+        private string _FilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)+"\\" ;
         private string _filename="sample.dxf";
         private string _slabNumb;
         private int _Progress;
@@ -50,6 +51,23 @@ namespace GetSlabReinfResult.ViewModel
 
         public ICommand CancelCommand => 
             new ActionCommand(async p => await Cancel());
+
+        public ICommand GetDataOrCancelCommand =>
+            new ActionCommand(async prg => {
+                if((prg as string)== "Get slab data")
+                {
+                    if (String.IsNullOrEmpty(SlabNumb) || String.IsNullOrEmpty(SlabNumb))
+                        return;
+                    if (SlabNumb.ToLower() == "fake")
+                        await GetDataAsyncFake();
+                    else await GetDataAsync();
+                }
+                else
+                {
+                    await Cancel();
+                }
+
+            });
         public ICommand GetDataCommand => 
             new ActionCommand(async prg =>{
                 if (String.IsNullOrEmpty(SlabNumb) || String.IsNullOrEmpty(SlabNumb))
@@ -64,18 +82,16 @@ namespace GetSlabReinfResult.ViewModel
             new ActionCommand(prg => { GetFilePath(); });
         public ICommand GetFocusedCommand =>
             new ActionCommand(prg => {
-                //ProgressString = "EventRemoved";
                 AddOrRemoveElapsedEventHandler(false); });
         public ICommand LostFocusedCommand => 
             new ActionCommand(prg => {
-                //ProgressString = "EventAdded";
                 AddOrRemoveElapsedEventHandler(true); });
 
         private void GetFilePath()
         {
             WinForms.FolderBrowserDialog dialog = new WinForms.FolderBrowserDialog();
             if (dialog.ShowDialog() == WinForms.DialogResult.OK)
-                FilePath = dialog.SelectedPath;
+                FilePath = dialog.SelectedPath+"\\";
         }
 
         public bool IsVisible
@@ -97,8 +113,8 @@ namespace GetSlabReinfResult.ViewModel
             {
                 if (value != _canCollect)
                 {
-                    _canCollect = value;
-                    OnPropertyChanged(nameof(_canCollect));
+                    _canCollect = value; 
+                    OnPropertyChanged(nameof(CanCollect));
                 }
             }
         }
@@ -215,16 +231,14 @@ namespace GetSlabReinfResult.ViewModel
             }
         }
 
-        private void Reset()
+        private void Reset(string message="")
         {
-            if (IsCollectorDone)
-                IsCollectorDone =!IsCollectorDone;
+            IsCollectorDone=false;
+            task = null;
+            CanCollect = true;
+            UpdateProgressText(new ProgressModelObject<double> 
+            { ProgressToString = message });
 
-            if(task!=null)
-            {
-                task.Dispose();
-                UpdateProgressText(new ProgressModelObject<double>());
-            }
         }
 
         public DrawAsType DrawingAsType
@@ -254,7 +268,7 @@ namespace GetSlabReinfResult.ViewModel
             try
             {
                await task.CreateDxfDrawingAsync(
-                  FilePath + "\\" + Filename,
+                  FilePath + Filename,
                   AType, 
                   SkipA,
                   scale,
@@ -268,6 +282,7 @@ namespace GetSlabReinfResult.ViewModel
 
         private async Task GetDataAsync()
         {
+
             IsCollectorDone = false;
             CanCollect = false;
             try
@@ -278,9 +293,9 @@ namespace GetSlabReinfResult.ViewModel
                 (prg as Progress<ProgressModelObject<double>>)
                     .ProgressChanged += (s, e) => UpdateProgressText(e);
 
-                task = new DataCollector.Logic.GetSlabReinfResult(SlabNumb.ToIntArrayFromRobotStringSelection(), ct, Services.RobotAppService.iapp);
+                task = new DataCollector.Logic.GetSlabReinfResult(ct, Services.RobotAppService.iapp);
                 
-                await task.StartAsync(prg, ct);
+                await task.StartAsync(SlabNumb.ToIntArrayFromRobotStringSelection(), prg, ct);
 
                 if (!ct.IsCancellationRequested)
                 {
@@ -296,10 +311,26 @@ namespace GetSlabReinfResult.ViewModel
                     
                
             }
+            catch (OperationCanceledException) // includes TaskCanceledException
+            {
+                Reset("Canceled");
+            }
+            catch (SlabNotCalculatedExpetation ex)
+            {
+                MessageBox.Show(ex.Message);
+                Reset(ex.Message);
+            }
+            catch (SlabNotCalculatedForReinfException ex)
+            {
+                MessageBox.Show(ex.Message);
+                Reset(ex.Message);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
+                Reset("Error: " + ex.Message);
             }
+
         }
 
         private async Task GetDataAsyncFake()
@@ -335,13 +366,14 @@ namespace GetSlabReinfResult.ViewModel
                 }
                 if (ct.IsCancellationRequested)
                 {
-                    IsCollectorDone = false;
+                    Reset();
                 }
                     
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
+                Reset();
             }
         }
 
@@ -359,8 +391,8 @@ namespace GetSlabReinfResult.ViewModel
         {
             if (ts != null)
             {
+                CanCollect = false;
                 ts.Cancel();
-                ts = new CancellationTokenSource();
             }
         }
 
@@ -393,6 +425,7 @@ namespace GetSlabReinfResult.ViewModel
         {
             SlabNumb = robotSelections.GetSlabSelection(SlabNumb).Trim();
         }
+
         public void Dispose()
         {
             aTimer.Dispose();

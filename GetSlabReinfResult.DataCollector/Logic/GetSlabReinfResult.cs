@@ -19,6 +19,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         private readonly string panelPath;
         private readonly string edgesPath;
         private readonly CancellationToken ct;
+        public List<string> ErrorList { get; set; }
 
         public bool IsDataCollected { get; internal set; }
 
@@ -28,14 +29,10 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public List<Panel> PanelEdges { get; internal set; }
 
         #region Constructor
-    public GetSlabReinfResult(int[] ObjNumbers, CancellationToken ct,IRobotApplication iapp=null)
+    public GetSlabReinfResult(CancellationToken ct,IRobotApplication iapp=null)
         {
             Services.RobotAppService.iapp = iapp;
             Init(iapp);
-            Validatings(ObjNumbers);
-            ValidatingOnSameZCoord(ObjNumbers);
-            this.ObjNumbers = ObjNumbers;
-            this.ct = ct;
         }
 
         public GetSlabReinfResult(IRobotApplication iapp = null)
@@ -63,6 +60,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             str = robot.Project.Structure;
             Panel = new List<RSA_FE>();
             PanelEdges = new List<Panel>();
+            ErrorList = new List<string>();
         }
         #endregion
 
@@ -165,6 +163,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
             parm.SetParam(IRobotResultParamType.I_RPT_RESULT_POINT_COORDINATES, 31);
 
             parm.ResultIds.SetSize(8);
+
             parm.ResultIds.Set(1, (int)T_DATA_TYPES.T_FERA_NOD_LONG_UP);
             parm.ResultIds.Set(2, (int)T_DATA_TYPES.T_FERA_NOD_TRAN_UP);
             parm.ResultIds.Set(3, (int)T_DATA_TYPES.T_FERA_NOD_LONG_DOWN);
@@ -176,6 +175,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
             var t = new RSATableQueryingResult();
             Panel = await t.ReadFromTableAsync(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
+
+            if (Panel.Count == 0)
+            {
+                throw new SlabNotCalculatedExpetation("None of selected slabs are meshed and calculated");
+            }
             
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
@@ -184,31 +188,34 @@ namespace GetSlabReinfResult.DataCollector.Logic
             int i = 0;
             ok = RobResRowSet.MoveFirst();
 
-            if (ct.IsCancellationRequested)
-            {
-                progress.Report(new ProgressModelObject<double>
-                { ProgressToString = "Canceled", Progress = 0 * 10 });
-                IsDataCollected = false;
-                return;
-            }
-
             progress.Report(new ProgressModelObject<double>
             { ProgressToString = "Getting reinforcements and node coordinations", Progress = 9 * 10 });
 
 
             while (ok)
             {
-
+                ///geting slab number
                 int p = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_PANEL);
+                ///if already got in error list
+                if (ErrorList.Any(g => g.Contains($"number {p} isn't")))
+                    goto ExitPlate;
 
                 var nodeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_NODE);
                 //var eeId = (int)RobResRowSet.CurrentRow.GetParam(IRobotResultParamType.I_RPT_ELEMENT); 
                 for (int x = 0; x < Panel.Count; x++)
                 {
+
                     for (int y = 0; y < Panel[x].nodes.Count; y++)
                     {
                         if (Panel[x].nodes[y].NodeId == nodeId)
                         {
+                            ///check if there is result for slab
+                            if (!RobResRowSet.CurrentRow.IsAvailable(RobResRowSet.ResultIds.Get(3)))
+                            {
+                                ErrorList.Add($"Slabs with number {p} isn't calculated for reinforcement");
+                                goto ExitPlate;
+                            }
+
                             Panel[x].nodes[y].AX_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(3)) * 10000, 3);
                             Panel[x].nodes[y].AY_BOTTOM = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(4)) * 10000, 3);
                             Panel[x].nodes[y].AX_TOP = Math.Round((double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(1)) * 10000, 3);
@@ -216,15 +223,20 @@ namespace GetSlabReinfResult.DataCollector.Logic
                             Panel[x].nodes[y].X = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(5));
                             Panel[x].nodes[y].Y = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(6));
                             Panel[x].nodes[y].Z = (double)RobResRowSet.CurrentRow.GetValue(RobResRowSet.ResultIds.Get(7));
-
                         }
                     }
                 }
-
+                ExitPlate:
                 i++;
                 ok = RobResRowSet.MoveNext();
             }
-            progress.Report(new ProgressModelObject<double> { ProgressToString = "Done collectiong done!", Progress = 10 * 10 });
+
+            if (ErrorList.Count == ObjNumbers.Length)
+                throw new SlabNotCalculatedForReinfException
+                    ("None of selected slabs are calculated for reinforcement");
+
+            progress.Report(new ProgressModelObject<double>
+            { ProgressToString = "Done collectiong done!", Progress = 10 * 10 });
             IsDataCollected = true;
         }
 
@@ -233,17 +245,16 @@ namespace GetSlabReinfResult.DataCollector.Logic
         /// </summary>
         /// <param name="progress"> IProgress for tacking progress</param>
         /// <param name="ct">cancelacionToken</param>
-        public async Task StartAsync(IProgress<ProgressModelObject<double>> progress,
+        public async Task StartAsync(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress,
             CancellationToken ct)
         {
+            this.ObjNumbers = ObjNumbers;
             await Task.Run(() =>
             {
                 progress.Report(new ProgressModelObject<double>() { ProgressToString = $"Validating selection" });
-                if (!ct.IsCancellationRequested) Validatings(ObjNumbers);
-                if (!ct.IsCancellationRequested) ValidatingOnSameZCoord(ObjNumbers);
-                if (!ct.IsCancellationRequested) GetSlabsEdges(ObjNumbers,progress);
-                
-                
+                    Validatings(ObjNumbers);
+                    ValidatingOnSameZCoord(ObjNumbers);
+                    GetSlabsEdges(ObjNumbers,progress);
             }, ct);
             await QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
 
@@ -327,13 +338,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 else throw new Exception($"File missing : {edgesPath}");
             });
 
-        }
-
-        public void Dispose()
-        {
-            Panel = null;
-            PanelEdges = null;
-            ObjNumbers = null;
         }
     }
 }

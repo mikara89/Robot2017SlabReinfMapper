@@ -67,21 +67,21 @@
                         HorizontalAlignment="Center"
                         Orientation="Horizontal">
                 <Button x:Name="_button" 
-                        Content="Get slab data"
+                        Content="{Binding CanCollect, Converter={StaticResource ConvertTrueToGetSlabData}}"
                         Margin="5"
                         Padding="5"
                         TabIndex="0"
-                        IsEnabled="{Binding CanCollect}"
                         HorizontalAlignment="Right"
-                        Command="{Binding GetDataCommand}">
+                        IsEnabled="{Binding CanCancel}"
+                        Command="{Binding GetDataOrCancelCommand}" CommandParameter="{Binding ElementName=_button, Path=Content}">
                 </Button>
-                <Button x:Name="c_button" 
+                <!--<Button x:Name="c_button" 
                         Margin="5" 
                         TabIndex="1"
                         Padding="5"
                         Command="{Binding CancelCommand}">
                     Cancel
-                </Button>
+                </Button>-->
             </StackPanel>
             
         </Grid>

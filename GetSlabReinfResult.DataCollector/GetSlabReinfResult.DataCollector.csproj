@@ -65,6 +65,8 @@
     <Compile Include="Logic\ProgressModelObject.cs" />
     <Compile Include="Logic\RobotSelections.cs" />
     <Compile Include="Logic\RSATableQueryingResult.cs" />
+    <Compile Include="Logic\SlabNotCalculatedExpetation.cs" />
+    <Compile Include="Logic\SlabNotCalculatedForReinfException.cs" />
     <Compile Include="Logic\TempFileManager.cs" />
     <Compile Include="Logic\T_DATA_TYPES.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

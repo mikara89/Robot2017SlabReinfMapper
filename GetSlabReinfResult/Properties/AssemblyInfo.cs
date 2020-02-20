@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RobotSlabReinfMapper")]
-[assembly: AssemblyDescription("Robot Structual Mapper")]
+[assembly: AssemblyTitle("RC Slab Mapper")]
+[assembly: AssemblyDescription("RC Slab Mapper")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mikara&Co")]
-[assembly: AssemblyProduct("RobotSlabReinfMapper")]
+[assembly: AssemblyProduct("RC Slab Mapper")]
 [assembly: AssemblyCopyright("Copyright © Mikara&Co  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -51,7 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.5.0")]
-[assembly: AssemblyFileVersion("1.1.5.0")]
+[assembly: AssemblyVersion("1.1.6.0")]
+[assembly: AssemblyFileVersion("1.1.6.0")]
 [assembly: NeutralResourcesLanguage("en")]
 

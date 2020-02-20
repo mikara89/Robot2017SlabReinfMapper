@@ -1,32 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace GetSlabReinfResult.Converter
 {
-    public class ConvertColorToSolidColorBrush : IValueConverter
+    public class ConvertTrueToGetSlabData : IValueConverter 
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is Color)
+            if (value is bool)
             {
-                return new SolidColorBrush((Color)value);
+                return (bool)value ? "Get slab data" : "Cancel";
             }
             return new SolidColorBrush();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is SolidColorBrush)
+            if (value is string)
             {
-                return  (value as SolidColorBrush).Color;
+                return (value as string)== "Get slab data"? true:false;
             }
-            return new Color();
+            return null;
         }
     }
     

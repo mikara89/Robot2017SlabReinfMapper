@@ -16,4 +16,6 @@
     <convert:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
     <convert:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
     <convert:ConvertScaleTypeToInt x:Key="ConvertScaleTypeToInt"/>
+    <convert:ConvertTrueToGetSlabData x:Key="ConvertTrueToGetSlabData"/> 
+    
 </ResourceDictionary>
