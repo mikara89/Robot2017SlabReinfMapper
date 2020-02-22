@@ -1,7 +1,9 @@
 ﻿using GetSlabReinfResult;
+using GetSlabReinfResult.DataCollector.Logic;
 using RobotOM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -36,6 +38,8 @@ namespace GetSlabReinfResult
         {
     
             cmd_list.New(1, "Export slab reinforcement to .dxf"); // Text in Robot menu
+
+            cmd_list.New(2, "Table"); // Text in Robot menu
             return cmd_list.Count;
         }
 
@@ -51,8 +55,17 @@ namespace GetSlabReinfResult
 
             try
             {
-                w = new MainWindow();
-                w.Show(); 
+                if (cmd_id == 1)
+                {
+                    w = new MainWindow();
+                    w.Show();
+                }else if (cmd_id == 2)
+                {
+                    var test = new GetResultForStorys(iapp);
+
+                    //var t1 = test.QueryResultsForStoreys("12", new Progress<ProgressModelObject<double>>(), default);
+                        var t = test.QueryResultsForStorey(12, new Progress<ProgressModelObject<double>>(), default); 
+                    }
             }
             catch (Exception ex)
             {

@@ -157,6 +157,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
             parm.Selection.Set(IRobotObjectType.I_OT_PANEL, selecPlate);
 
+            parm.SetParam(IRobotResultParamType.I_RPT_MULTI_THREADS, true);
             parm.SetParam(IRobotResultParamType.I_RPT_ELEMENT, 11);
             parm.SetParam(IRobotResultParamType.I_RPT_NODE, 3);
             parm.SetParam(IRobotResultParamType.I_RPT_PANEL, 2);
