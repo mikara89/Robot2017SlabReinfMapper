@@ -1,0 +1,178 @@
+﻿<UserControl x:Class="TableTetaUI.Controler.Tables.ThetaTableControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TableTetaUI.Controler.Tables"
+             x:Name="tabelTheta"
+             xmlns:m="clr-namespace:TableTetaUI.Converter"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\..\ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <DataGrid  x:Name="dataGrid"
+                       Grid.Row="0"
+                       ItemsSource="{Binding ElementName=tabelTheta,
+                                       Path=DataContext}"
+                       AutoGenerateColumns="False"
+                       CanUserAddRows="False" 
+                       CanUserSortColumns="True"
+                       Padding="5">
+         
+            
+            <DataGrid.Resources>
+                
+                <m:BindingProxy x:Key="ProxyDataGrid" 
+                                Data="{Binding ElementName= dataGrid, 
+                                Path= SelectedItem}" />
+                <m:BindingProxy x:Key="ProxyDataContext" 
+                            Data="{Binding ElementName= dataGrid, 
+                                Path=DataContext}" />
+                
+                <ContextMenu x:Key="myContextMenu">
+                    <MenuItem Header="Remove storey"  
+                              CommandParameter="{Binding Source={StaticResource ProxyDataGrid}, 
+                                        Path=Data}"
+                                              Command="{Binding Source={StaticResource ProxyDataContext},
+                                        Path=Data.RemoveCommand}">
+                    </MenuItem>
+                </ContextMenu>
+              
+            </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="ContextMenu"  Value="{StaticResource myContextMenu}">
+                    </Setter>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="id" 
+                                        IsReadOnly="True" 
+                                        CanUserSort="True"
+                                        Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Name" 
+                                        IsReadOnly="True"
+                                        Width="*"
+                                        Binding="{Binding StoreyName}"/>
+                <DataGridTextColumn MinWidth="50"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Fz,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 2}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="P_tot"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[kN]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="50" 
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding h,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 2}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="h"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[m]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="60"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Fx,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 2}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="V_tot_X"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[kN]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="50"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Fy,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 2}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="V_tot_Y"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[kN]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="40"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding dr_x,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 4}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="dr_X"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[m]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="40"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding dr_y,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 4}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" Text="dr_Y"/>
+                            <TextBlock HorizontalAlignment="Center"  Text="[m]"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="40"
+                                        Width="auto"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Teta_x,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 4}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" 
+                                           Text="θ_X"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="40"
+                                        Width="auto" 
+                                        IsReadOnly="True"
+                                        Binding="{Binding Teta_x,
+                        Converter={StaticResource RoundDoubleConverter}, 
+                        ConverterParameter={m:Int32 4}}">
+                    <DataGridTextColumn.Header>
+                        <StackPanel  Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" 
+                                           Text="θ_Y"/>
+                        </StackPanel>
+                    </DataGridTextColumn.Header>
+                    <!--<DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Background" 
+                                Value="{StaticResource clRBr}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>-->
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfTableTetaModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TableTetaModel>
+    <Id>8</Id>
+    <StoreyName>Roof</StoreyName>
+    <h>3</h>
+    <Fx>926.422</Fx>
+    <Fy>1132.948</Fy>
+    <Fz>-3583.006</Fz>
+    <dr_x>0.013</dr_x>
+    <dr_y>0.011</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>7</Id>
+    <StoreyName>Level 5</StoreyName>
+    <h>3</h>
+    <Fx>1645.114</Fx>
+    <Fy>2017.193</Fy>
+    <Fz>-7363.081</Fz>
+    <dr_x>0.015</dr_x>
+    <dr_y>0.012</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>6</Id>
+    <StoreyName>Level 4</StoreyName>
+    <h>3</h>
+    <Fx>2174.753</Fx>
+    <Fy>2679.217</Fy>
+    <Fz>-11143.155</Fz>
+    <dr_x>0.017</dr_x>
+    <dr_y>0.013</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>5</Id>
+    <StoreyName>Level 3</StoreyName>
+    <h>3</h>
+    <Fx>2593.49</Fx>
+    <Fy>3189.959</Fy>
+    <Fz>-14923.23</Fz>
+    <dr_x>0.017</dr_x>
+    <dr_y>0.012</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>4</Id>
+    <StoreyName>Level 2</StoreyName>
+    <h>3</h>
+    <Fx>2935.494</Fx>
+    <Fy>3576.251</Fy>
+    <Fz>-18703.304</Fz>
+    <dr_x>0.017</dr_x>
+    <dr_y>0.011</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>3</Id>
+    <StoreyName>Level 1</StoreyName>
+    <h>4</h>
+    <Fx>3183.802</Fx>
+    <Fy>3839.827</Fy>
+    <Fz>-22669.769</Fz>
+    <dr_x>0.02</dr_x>
+    <dr_y>0.01</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>2</Id>
+    <StoreyName>Level 0</StoreyName>
+    <h>3</h>
+    <Fx>3186.973</Fx>
+    <Fy>3848.525</Fy>
+    <Fz>-22908.387</Fz>
+    <dr_x>0.001</dr_x>
+    <dr_y>0.002</dr_y>
+  </TableTetaModel>
+  <TableTetaModel>
+    <Id>1</Id>
+    <StoreyName>Level -1</StoreyName>
+    <h>3</h>
+    <Fx>3187.282</Fx>
+    <Fy>3849.994</Fy>
+    <Fz>-22908.387</Fz>
+    <dr_x>0</dr_x>
+    <dr_y>0</dr_y>
+  </TableTetaModel>
+</ArrayOfTableTetaModel>

@@ -7,7 +7,7 @@
     <ProjectGuid>{1C5C4685-6EEB-420F-B45A-35EF1CB288E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GetSlabReinfResult</RootNamespace>
-    <AssemblyName>RCSlabMapper</AssemblyName>
+    <AssemblyName>GetSlabReinfResult</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -230,6 +230,10 @@
     <ProjectReference Include="..\GetSlabReinfResult.DataCollector\GetSlabReinfResult.DataCollector.csproj">
       <Project>{422f225f-be55-4791-bd01-26c654f8d4bf}</Project>
       <Name>GetSlabReinfResult.DataCollector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TableTetaUI\TableTetaUI.csproj">
+      <Project>{ff81fa46-b950-4cba-8bd8-9fed23efa907}</Project>
+      <Name>TableTetaUI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

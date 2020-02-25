@@ -1,17 +1,10 @@
-﻿using GetSlabReinfResult;
-using GetSlabReinfResult.DataCollector.Logic;
-using RobotOM;
+﻿using RobotOM;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace GetSlabReinfResult
+namespace RSA_addin 
 {
 
 
@@ -20,23 +13,24 @@ namespace GetSlabReinfResult
     public class StartUpAddIn : IRobotAddIn
     {
         private IRobotApplication iapp = null;
-        private MainWindow w = null;
+        private GetSlabReinfResult.MainWindow w = null;
 
         public double GetExpectedVersion()
         {
-           throw new NotImplementedException() ;
+            throw new NotImplementedException();
         }
         public bool Connect(RobotApplication robot_app, int add_in_id, bool first_time)
         {
-            Services.RobotAppService.iapp = robot_app;
-            InitAddAssembly();
+            GetSlabReinfResult.Services.RobotAppService.iapp = robot_app;
+            TableTetaUI.Services.RobotAppService.iapp = robot_app;
+            //InitAddAssembly();
             return true;
         }
 
 
         public int InstallCommands(RobotCmdList cmd_list)
         {
-    
+
             cmd_list.New(1, "Export slab reinforcement to .dxf"); // Text in Robot menu
 
             cmd_list.New(2, "Table"); // Text in Robot menu
@@ -46,7 +40,7 @@ namespace GetSlabReinfResult
         public bool Disconnect()
         {
             w = null;
-            Services.RobotAppService.iapp = null;
+            GetSlabReinfResult.Services.RobotAppService.iapp = null;
             return true;
         }
 
@@ -57,9 +51,10 @@ namespace GetSlabReinfResult
             {
                 if (cmd_id == 1)
                 {
-                    w = new MainWindow();
+                    w = new GetSlabReinfResult.MainWindow();
                     w.Show();
-                }else if (cmd_id == 2)
+                }
+                else if (cmd_id == 2)
                 {
                     var tabelTetaWindow = new TableTetaUI.MainWindow();
                     tabelTetaWindow.Show();
@@ -67,7 +62,7 @@ namespace GetSlabReinfResult
 
                     ////var t1 = test.QueryResultsForStoreys("12", new Progress<ProgressModelObject<double>>(), default);
                     //    var t = test.QueryResultsForStorey(12, new Progress<ProgressModelObject<double>>(), default); 
-                 }
+                }
             }
             catch (Exception ex)
             {

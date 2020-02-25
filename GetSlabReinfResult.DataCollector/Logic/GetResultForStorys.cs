@@ -2,8 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace GetSlabReinfResult.DataCollector.Logic
 {
@@ -11,12 +14,16 @@ namespace GetSlabReinfResult.DataCollector.Logic
     {
         private IRobotApplication robot;
         private RobotStructure str;
-
+        private readonly string path = System.IO.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath) + "\\storiesDataXYP.json";
         #region Constructor
 
-        public GetResultForStorys(IRobotApplication iapp = null)
+        public GetResultForStorys(IRobotApplication iapp)
         {
             Init(iapp);
+        }
+        public GetResultForStorys()
+        {
+
         }
 
         private void Init(IRobotApplication iapp)
@@ -137,7 +144,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         public Storys QueryResultsForStorey(int loadCase, 
              IProgress<ProgressModelObject<double>> progress,
-             CancellationToken ct)
+             CancellationToken ct, bool onlyForces=false) 
         {
             var result = new Storys();
 
@@ -150,40 +157,21 @@ namespace GetSlabReinfResult.DataCollector.Logic
                     ProgressToString=$"Addding data from slab/case: {storey.Name}/{loadCase}..."
                 });
 
+                var disp = onlyForces ? null: str.Results.Storeys.Displacements(storeyIndex, loadCase);
+                var forces = str.Results.Storeys.ReducedForces(storeyIndex, loadCase);
                 var story = new Story
                 {
                     Index = storeyIndex,
                     Name = str.Storeys.Get(i).Name,
-                    LVL = storey.Level,
-                    Height = storey.Height,
-                    ReducedForces = str.Results.Storeys.ReducedForces(storeyIndex, loadCase),
-                    Displacements = str.Results.Storeys.Displacements(storeyIndex, loadCase),
-                    Values = str.Results.Storeys.Values(storeyIndex, loadCase),
-
+                    LVL = Math.Round(storey.Level,3),
+                    Height = Math.Round(storey.Height, 3),
+                    dr_x = onlyForces ? 0 : Math.Round(disp.DrUX,3),
+                    dr_y = onlyForces ? 0 : Math.Round(disp.DrUY,3),
+                    Fx = Math.Round(forces.FX/1000,3),
+                    Fy = Math.Round(forces.FY/1000,3),
+                    Fz = Math.Round(forces.FZ/1000,3)
                 };
                 result.Add(story);
-            }
-
-            return result;
-        }
-        public async Task<Storys> QueryResultsForStoreyAsync(int loadCase,
-           IProgress<ProgressModelObject<double>> progress,
-           CancellationToken ct) 
-        {
-            return await Task.Run(() =>
-            {
-                return QueryResultsForStorey(loadCase, progress, ct);
-            });
-        }
-
-        public async Task<Storys[]> QueryResultsForStoreyByCasesAsync(int[] loadCase,
-             IProgress<ProgressModelObject<double>> progress,
-             CancellationToken ct)
-        {
-            var result = new Storys[loadCase.Length];
-            for (int i = 0; i < loadCase.Length; i++)
-            {
-                result[i] = await QueryResultsForStoreyAsync(loadCase[i], progress, ct);
             }
             return result;
         }
@@ -270,6 +258,22 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
             return table;
         }
+
+        public void SaveToJson(Storys[] stories)
+        {
+           
+            using (StreamWriter file = File.CreateText(path))
+            {
+                Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                //serialize object directly into file stream
+                serializer.Serialize(file, stories);
+            }
+        }
+        
+        public Storys[] ReadFromJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Storys[]>(File.ReadAllText(path));
+        }
     }
     public class Storys:List<Story>
     {
@@ -282,10 +286,17 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public double LVL { get; set; }
         public double Height { get; set; }
 
-        public RobotStoreyReducedForces ReducedForces { get; set; }
-        public RobotStoreyDisplacements Displacements { get; set; }
-        public RobotStoreyValues Values { get; set; }
+        public double Fx { get; set; }
+        public double Fy { get; set; }
+        public double Fz { get; set; }
+        public double dr_x { get; set; }
+        public double dr_y { get; set; }
+
+        //public RobotStoreyReducedForces ReducedForces { get; set; }
+        //public RobotStoreyDisplacements Displacements { get; set; }
+        //public RobotStoreyValues Values { get; set; }
 
     }
+
 
 }
