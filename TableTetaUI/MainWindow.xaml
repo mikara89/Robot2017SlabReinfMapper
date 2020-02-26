@@ -11,6 +11,7 @@
         xmlns:res="clr-namespace:TableTetaUI.ViewModels"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:controler="clr-namespace:TableTetaUI.Controler"
+        xmlns:contSetting="clr-namespace:TableTetaUI.Controler.Settings"
         xmlns:table1="clr-namespace:TableTetaUI.Controler.Tables"
         d:DataContext="{x:Static res:MainWindowViewModel.DesignInstance}"
         mc:Ignorable="d" MaxHeight="500" MaxWidth="600" ResizeMode="NoResize"
@@ -60,8 +61,11 @@
                     <TabItem Header="4.4.3.2(1,2) Drift limitation" />
                     <TabItem Header="5.1.2 type of structure" />
                     <TabItem HorizontalAlignment="Center"
-                             Header="Settings" />
-                    
+                             Header="Settings" >
+                        <contSetting:SettingsControl/>
+                    </TabItem>
+                   
+
                 </TabControl>
                
                 <Grid Background="AliceBlue"

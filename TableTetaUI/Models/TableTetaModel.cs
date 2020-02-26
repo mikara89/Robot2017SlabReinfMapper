@@ -8,21 +8,12 @@ using System.Threading.Tasks;
 
 namespace TableTetaUI.Models
 {
-    public class TableTetaModel
+    public class TableTetaModel: StoreyDriftModel
     {
-        //public static ObservableCollection<TableTetaModel> tableTetaModels => new ObservableCollection<TableTetaModel>
-        //{
-        //    new TableTetaModel{ Id=1, StoreyName="LVL -1", dr_x=0.001, dr_y=0.001, Fx= 1000, Fy=2000, Fz=5200, h=3},
-        //    new TableTetaModel{ Id=2, StoreyName="LVL 0", dr_x=0.002, dr_y=0.002, Fx= 1000, Fy=2000, Fz=5200, h=4}
-        //};
-        public int Id { get; set; }
-        public string StoreyName { get; set; }
-        public double h { get; set; }
         public double Fx { get; set; }
         public double Fy { get; set; }
         public double Fz { get; set; }
-        public double dr_x { get; set; }
-        public double dr_y { get; set; }
+
         public double Teta_x
         {
             get
@@ -56,11 +47,6 @@ namespace TableTetaUI.Models
                     Id=X[i].Index,
                     StoreyName=X[i].Name,
                     h=X[i].Height,
-                    //dr_x=X[i].Displacements.DrUX,
-                    //dr_y = Y[i].Displacements.DrUY,
-                    //Fx = X[i].ReducedForces.FX,
-                    //Fy = Y[i].ReducedForces.FY,
-                    //Fz= P_tot[i].ReducedForces.FZ,
 
                     dr_x = X[i].dr_x,
                     dr_y = Y[i].dr_y,
@@ -73,8 +59,25 @@ namespace TableTetaUI.Models
         }
     }
 
-    public class TableTetaModelList : List<TableTetaModel>
+    public class StoreyModel
     {
-
+        public int Id { get; set; }
+        public string StoreyName { get; set; }
+        public double h { get; set; }
+    }
+    public class StoreyDriftModel: StoreyModel
+    {
+        public double dr_x { get; set; }
+        public double dr_y { get; set; }
+    }
+    public class TableLimitationStoreyDriftModel: StoreyDriftModel
+    {
+        public double vDrWith_h_X { get; set; }
+        public double vDrWith_h_Y { get; set; } 
+    }
+    public enum CatOfObjectImportance
+    {
+        I_II,
+        III_IV
     }
 }

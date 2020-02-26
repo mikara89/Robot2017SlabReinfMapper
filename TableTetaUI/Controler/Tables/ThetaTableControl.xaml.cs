@@ -40,20 +40,5 @@ namespace TableTetaUI.Controler.Tables
         {
             vm.RemoveCommand.Execute(dataGrid.SelectedItem as Models.TableTetaModel);
         }
-
-        //    public string ItemSource 
-        //    {
-        //        get { return (string)GetValue(ItemSourceProperty); }
-        //        set { SetValue(ItemSourceProperty, value); }
-        //    }
-
-        //    // Using a DependencyProperty as the backing store for TextFilePath.
-        //    //This enables animation, styling, binding, etc...
-        //    public static readonly DependencyProperty ItemSourceProperty =
-        //        DependencyProperty.Register(
-        //            "ItemSource",
-        //            typeof(string),
-        //            typeof(ThetaTableControl),
-        //            new PropertyMetadata(""));
     }
 }

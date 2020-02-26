@@ -28,7 +28,7 @@ namespace TableTetaUI.ViewModels
             YDirCase = 6,
             XDirCase = 12,
             G_Psi_QCase = 1,
-            IsLoading=true,
+            IsLoading=false,
             ProgressString= "Faching data for X case direction..."
         };
         public ThetaTableControlViewModel Tabel;
@@ -39,6 +39,15 @@ namespace TableTetaUI.ViewModels
         private bool _IsLoading=false;
         private CancellationTokenSource ts;
         private string _ProgressString;
+
+
+        public MainWindowViewModel()
+        {
+            Tabel = new ThetaTableControlViewModel();
+            YDirCase = 6;
+            XDirCase = 12;
+            G_Psi_QCase = 18;
+        }
 
         public string ProgressString
         {
@@ -68,8 +77,7 @@ namespace TableTetaUI.ViewModels
             set { SetValue(ref _G_Psi_QCase, value); }
         }
 
-        
-             public ICommand CancelCommand =>
+        public ICommand CancelCommand =>
            new ActionCommand(async p => await CancelAsync());
 
         public ICommand ExportToExcelCommand =>
@@ -78,8 +86,6 @@ namespace TableTetaUI.ViewModels
 
         public ICommand LoadCommand =>
            new ActionCommand(async p => await LoadFakeAsync()); 
-        public ICommand RemoveCommand =>
-           new ActionCommand(async p => await RemoveAsync(p));
 
         private async Task CancelAsync()
         {
@@ -95,21 +101,6 @@ namespace TableTetaUI.ViewModels
                         break;
                 }
             }
-        }
-
-        private async Task RemoveAsync(object p)
-        {
-            var storey = Tabel.ToList().Find(x => x.Id == (p as TableTetaModel).Id);
-            MessageBoxResult result = MessageBox.Show($"Are you sure that you want to remove {storey.StoreyName}?", "Removing storey", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            switch (result)
-            {
-                case MessageBoxResult.Yes:
-                    Tabel.Remove(storey);
-                    break;
-                case MessageBoxResult.No:
-                    break;
-            }
-
         }
 
         private async Task LoadAsync()
@@ -189,7 +180,7 @@ namespace TableTetaUI.ViewModels
                 var stories = RobotDataCollector.ReadFromJson();
                 r = await Task.Run(() =>
                  {
-                     prg.Report(new ProgressModelObject<double> { ProgressToString = "Faching data forfrom file..." });
+                     prg.Report(new ProgressModelObject<double> { ProgressToString = "Faching data from file..." });
                      Task.Delay(3000).Wait(ct);
 
                      return TableTetaModel.Create(stories[0], stories[1], stories[2]).OrderByDescending(x => x.Id).ToList();
@@ -228,12 +219,6 @@ namespace TableTetaUI.ViewModels
             }
         }
 
-        public MainWindowViewModel()
-        {
-            Tabel = new ThetaTableControlViewModel();
-            YDirCase = 6;
-            XDirCase = 12;
-            G_Psi_QCase = 18;
-        }
+
     }
 }

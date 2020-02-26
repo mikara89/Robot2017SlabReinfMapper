@@ -68,6 +68,9 @@
     <Compile Include="Controler\BusyIndecatorControl.xaml.cs">
       <DependentUpon>BusyIndecatorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controler\Settings\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controler\Tables\ThetaTableControl.xaml.cs">
       <DependentUpon>ThetaTableControl.xaml</DependentUpon>
     </Compile>
@@ -81,10 +84,15 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\Command.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\Table\ThetaTableControlViewModel.cs" />
     <Page Include="Controler\BusyIndecatorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controler\Settings\SettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controler\Tables\ThetaTableControl.xaml">
       <SubType>Designer</SubType>

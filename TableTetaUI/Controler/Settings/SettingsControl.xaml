@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="TableTetaUI.Controler.Settings.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TableTetaUI.Controler.Settings"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <Grid Background="WhiteSmoke">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Column="0" Grid.Row="0"
+                      Header="Theta paramiters">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="2,0,0,0"
+                                Grid.Column="0" 
+                                Orientation="Vertical">
+                        <TextBlock Height="{Binding ElementName=tb, Path=ActualHeight}"
+                                   VerticalAlignment="Center" Text="θ_max"/>
+                        <TextBlock Height="{Binding ElementName=tb, Path=ActualHeight}"
+                                   VerticalAlignment="Center" Text="θ_sec"/>
+                        <TextBlock Height="{Binding ElementName=tb, Path=ActualHeight}"
+                                   VerticalAlignment="Center" Text="θ_nom"/>
+                    </StackPanel>
+                    <StackPanel Margin="2,0,0,0" Grid.Column="1" Orientation="Vertical">
+                        <TextBox x:Name="tb" Text="0.3"/>
+                        <TextBox Text="0.2"/>
+                        <TextBox Text="0.1"/>
+                    </StackPanel>
+                </Grid>
+
+            </GroupBox>
+            <GroupBox Grid.Column="1"  Grid.Row="0"
+                      Header="Limitation drift paramiters">
+                <StackPanel Orientation="Vertical">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" 
+                                    Orientation="Vertical">
+                            <TextBlock Height="{Binding ElementName=tb1, Path=ActualHeight}"
+                                   VerticalAlignment="Center" 
+                                       Text="I, II, v="/>
+                            <TextBlock Height="{Binding ElementName=tb1, Path=ActualHeight}"
+                                   VerticalAlignment="Center" 
+                                       Text="III, IV, v="/>
+
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" 
+                                    Orientation="Vertical">
+                            <TextBox x:Name="tb1" Text="0.5"/>
+                            <TextBox Text="0.4"/>
+                        </StackPanel>
+
+                    </Grid>
+                    <Separator/>
+                    <TextBlock TextWrapping="Wrap" 
+                               Text="Your type of structure importance:"/>
+                    <RadioButton IsChecked="True" 
+                                 Content="I and II category"/>
+                    <RadioButton Content="III and IV category"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="1" 
+                      Grid.ColumnSpan="2"
+                      Header="Type of structure paramiters">
+
+            </GroupBox>
+        </Grid>
+        <StackPanel HorizontalAlignment="Center" Margin="10" Grid.Column="1" 
+                    Orientation="Vertical">
+            <TextBlock HorizontalAlignment="Center" 
+                       Text="Pick saved:"/>
+            <ComboBox MinWidth="100" 
+                      IsEditable="True">
+                
+            </ComboBox>
+            <Button Margin="0,5" Content="Save"/>
+        </StackPanel>
+    </Grid>
+   
+</UserControl>

@@ -75,7 +75,7 @@
                         </StackPanel>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
-                <DataGridTextColumn MinWidth="50" 
+                <DataGridTextColumn MinWidth="40" 
                                         Width="auto"
                                         IsReadOnly="True"
                                         Binding="{Binding h,
@@ -88,7 +88,7 @@
                         </StackPanel>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
-                <DataGridTextColumn MinWidth="60"
+                <DataGridTextColumn MinWidth="70"
                                         Width="auto"
                                         IsReadOnly="True"
                                         Binding="{Binding Fx,

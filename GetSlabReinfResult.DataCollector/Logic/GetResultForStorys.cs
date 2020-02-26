@@ -169,7 +169,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                     dr_y = onlyForces ? 0 : Math.Round(disp.DrUY,3),
                     Fx = Math.Round(forces.FX/1000,3),
                     Fy = Math.Round(forces.FY/1000,3),
-                    Fz = Math.Round(forces.FZ/1000,3)
+                    Fz = Math.Abs(Math.Round(forces.FZ/1000,3))
                 };
                 result.Add(story);
             }
