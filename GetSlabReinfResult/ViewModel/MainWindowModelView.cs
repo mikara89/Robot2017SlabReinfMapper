@@ -17,7 +17,7 @@ namespace GetSlabReinfResult.ViewModel
     {
         public static MainWindowModelView DesignInstance { get; set; } = new MainWindowModelView()
         {
-            legendViewModel = DesignLegendViewModel.Instanc,
+            //legendViewModel = DesignLegendViewModel.Instanc,
             IsCollectorDone = false, 
         };
 
@@ -133,10 +133,10 @@ namespace GetSlabReinfResult.ViewModel
             get { return _legendViewModel; }
             set { SetValue(ref _legendViewModel, value);
                 OnPropertyChanged(nameof(legendViewModel));
-                legendViewModel.ListOfLagendItems.AddingNew += (s, e) =>
-                {
-                    Height = 0;
-                };
+                //legendViewModel.ListOfLagendItems.AddingNew += (s, e) =>
+                //{
+                //    Height = 0;
+                //};
                 
             }
         }
@@ -146,7 +146,7 @@ namespace GetSlabReinfResult.ViewModel
             set
             {
                 SetValue(ref _Height, value);
-                if (IsCollectorDone) _Height = 260 + 37 * legendViewModel.ListOfLagendItems.Count;
+                if (IsCollectorDone) _Height = 260 + 37 * legendViewModel.Count;
                 if (!IsCollectorDone) _Height = 200;
                 OnPropertyChanged(nameof(Height));
             }
@@ -255,7 +255,7 @@ namespace GetSlabReinfResult.ViewModel
             scale.slabNumber = SlabNumb.ToString();
             scale.LegendOfType = FE.GetA_TypeAsString(AType);
             
-            legendViewModel.ListOfLagendItems.ToList()
+            legendViewModel.ToList()
                 .ForEach(x => scale.ListOfLagendItems.Add(
                 
                 new GenerateIsolines.Model.LegendItem
