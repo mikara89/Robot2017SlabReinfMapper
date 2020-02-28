@@ -11,5 +11,10 @@ namespace GetSlabReinfResult
         {
             InitializeComponent();
         }
+        private void DataGridTextColumn_TargetUpdated(object s, System.EventArgs e)
+        {
+            var vm = DataContext as ViewModel.LegendViewModel;
+            vm.FilterAndSortCommand.Execute(null);
+        }
     }
 }

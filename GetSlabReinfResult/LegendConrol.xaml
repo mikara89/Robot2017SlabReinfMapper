@@ -58,14 +58,14 @@
         <DataGrid   
             HorizontalAlignment="Center"
             x:Name="dataGrid"
-            ItemsSource="{Binding Path=ListOfLagendItems}"  
+            ItemsSource="{Binding}"  
             VerticalAlignment="Top"
-            CanUserAddRows="False"
-            Height="Auto"
+            CanUserAddRows="False" 
+            Height="Auto" 
             AutoGenerateColumns="False"
             Width="Auto">
             <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectedCellsChanged" >
+                <i:EventTrigger EventName="CurrentCellChanged" >
                     <i:InvokeCommandAction Command="{Binding CellEditedCommand}" 
                                            x:Name="interactivityFix" />
                 </i:EventTrigger>
@@ -96,8 +96,17 @@
                                     ElementStyle="{StaticResource CellText}"
                                     HeaderStyle="{StaticResource HeaderCellText}"
                                     
-                                Binding="{Binding Areg,Mode=TwoWay}"
+                                Binding="{Binding Areg,Mode=TwoWay,NotifyOnSourceUpdated=True ,UpdateSourceTrigger=LostFocus,StringFormat=N2}"
                                 Header="Areg">
+                    <DataGridTextColumn.EditingElementStyle>
+
+                        <Style TargetType="{x:Type TextBox}">
+                            <EventSetter Event="Binding.SourceUpdated" 
+                                         Handler="DataGridTextColumn_TargetUpdated">
+                            </EventSetter>
+                        </Style>
+                        
+                    </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <DataGridTemplateColumn Header="Color" 

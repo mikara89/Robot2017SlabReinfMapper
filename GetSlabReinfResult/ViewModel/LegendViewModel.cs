@@ -1,8 +1,10 @@
 ﻿using GetSlabReinfResult.DataCollector.Logic;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -10,11 +12,11 @@ using WinForms = System.Windows.Forms;
 
 namespace GetSlabReinfResult.ViewModel
 {
-    public class DesignLegendViewModel: LegendViewModel
+    public class DesignLegendViewModel : LegendViewModel
     {
-        public DesignLegendViewModel(double MaxA, double MinA) : base(MaxA, MinA,0)
+        public DesignLegendViewModel(double MaxA, double MinA) : base(MaxA, MinA, 0)
         {
-            ListOfLagendItems = new BindingList<LegendItemViewModel> 
+            var ListOfLagendItems = new List<LegendItemViewModel>
             {
                 new LegendItemViewModel
                 {
@@ -71,31 +73,60 @@ namespace GetSlabReinfResult.ViewModel
                     Color = Colors.Red,
                 },
             };
+            ListOfLagendItems.ForEach(x => this.Add(x));
             ScaleType = 2;
         }
 
-        public static DesignLegendViewModel Instanc => new DesignLegendViewModel(30,0);
+        public static DesignLegendViewModel Instanc => new DesignLegendViewModel(30, 0);
     }
 
-    public class LegendViewModel : BaseViewModel
+    public class LegendViewModel : ObservableCollection<LegendItemViewModel>, INotifyPropertyChanged
     {
+
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        protected void SetValue<T>(ref T backingField, T value)
+        {
+            if (EqualityComparer<T>.Default.Equals(backingField, value))
+                return;
+            backingField = value;
+            OnPropertyChanged();
+        }
+        #endregion
         #region Commands
         public ICommand OpenCommand =>
            new ActionCommand(async p => await Open());
+        public ICommand FilterAndSortCommand =>
+          new ActionCommand(async p => await FilterAndSort());
         public ICommand SaveCommand =>
             new ActionCommand(async p => await Save());
         public ICommand ResetCommand =>
             new ActionCommand(async p => await Reset());
         public ICommand CellEditedCommand => 
-           new ActionCommand(p => ListOfLagendItems.ToList().ForEach(x => x = FromDisc(x)));
+           new ActionCommand(async p => await CellEdited());
         public ICommand AddRowCommand =>
-          new ActionCommand(p => ListOfLagendItems.AddNew());
+          new ActionCommand(p => this.Add());
         public ICommand RemoveRowCommand =>
-          new ActionCommand(p =>  ListOfLagendItems.Remove((p as LegendItemViewModel)));
+          new ActionCommand(p => this.Remove((p as LegendItemViewModel)));
 
-        
+        private async Task FilterAndSort()
+        {
+            Filter();
+            SortList();
+        }
+        private async Task CellEdited()
+        {
+                this.ToList()
+                .ForEach(x => x = MagicTextGenerator(x));
+        }
         private async Task Reset()
         {
+            this.Clear();
             PopulateTableDefault();
         }
 
@@ -130,8 +161,6 @@ namespace GetSlabReinfResult.ViewModel
             }
         }
         #endregion
-
-        private BindingList<LegendItemViewModel> _listOfLagendItems;
         private double _maxA;
         private double _minA;
         public double MaxA { get => _maxA; internal set { _maxA = value; OnPropertyChanged(nameof(MaxA)); } }
@@ -139,14 +168,6 @@ namespace GetSlabReinfResult.ViewModel
         public double SkipA { get; set; }
         private int _scaleType;
 
-
-
-        public BindingList<LegendItemViewModel> ListOfLagendItems
-        { get => _listOfLagendItems;
-            set {
-                SetValue(ref _listOfLagendItems, value);
-                OnPropertyChanged(nameof(ListOfLagendItems));
-            } }
         public int ScaleType
         {
             get => _scaleType;
@@ -156,7 +177,7 @@ namespace GetSlabReinfResult.ViewModel
                 {
                     SetValue(ref _scaleType, value);
                     OnPropertyChanged(nameof(ScaleType));
-                    if (ListOfLagendItems != null)
+                    if (this != null)
                     {
                         GenerateColors();
                     }
@@ -172,21 +193,20 @@ namespace GetSlabReinfResult.ViewModel
             PopulateTableDefault();
         }
 
-        private void AddNewItemHendler(object sender, AddingNewEventArgs e)
+        private void Add() 
         {
             var r = new Random();
-            var item = e.NewObject as LegendItemViewModel;
-            item = new LegendItemViewModel();
+            var item = new LegendItemViewModel();
             item.Areg =Math.Round( MinA+((MaxA-SkipA-MinA) / 2),2);
-            item.Description = "New"+(ListOfLagendItems.Where(x=>x.Description.Contains("New")).Count()+1.0);
+            item.Description = "New"+(this.Where(x=>x.Description.Contains("New")).Count()+1.0);
             item.Color = Color.FromArgb
                 (255,
                 Convert.ToByte(r.Next(0, 256)), 
                 Convert.ToByte(r.Next(0, 256)), 
                 Convert.ToByte(r.Next(0, 256)));
-            e.NewObject = item;
+            this.Add(item);
             Filter();
-            GenerateColors();
+            SortList();
         }
         #region ColorGenerator
 
@@ -210,16 +230,16 @@ namespace GetSlabReinfResult.ViewModel
 
         private void RandomColors()
         {
-            ListOfLagendItems[0].Color = Colors.Transparent;
+            this[0].Color = Colors.Transparent;
 
-            ListOfLagendItems.Last().Color = Colors.Red;
+            this.Last().Color = Colors.Red;
 
             var r = new Random();
            
-            var n = ListOfLagendItems.Count();
+            var n = this.Count();
             for (int i = 1; i < n-1; i++)
             {
-                ListOfLagendItems[i].Color = 
+                this[i].Color = 
                     Color.FromArgb(
                         255,
                         Convert.ToByte(r.Next(0,256)),
@@ -230,7 +250,7 @@ namespace GetSlabReinfResult.ViewModel
 
         private void SetHeatColors()
         {
-            foreach (var item in ListOfLagendItems)
+            foreach (var item in this)
             {
                 item.Color = HeatMap(item.Areg, MinA, MaxA - SkipA);
             }
@@ -248,10 +268,10 @@ namespace GetSlabReinfResult.ViewModel
 
         private void Set5ColorsScale() 
         {
-            var n = ListOfLagendItems.Count();
+            var n = this.Count();
             for (int i = 0; i < n; i++)
             {
-                ListOfLagendItems[i].Color= ScaleColor((i+1)/Convert.ToDouble(n));
+                this[i].Color= ScaleColor((i+1)/Convert.ToDouble(n));
             }
         }
         private Color ScaleColor(double n)
@@ -291,45 +311,38 @@ namespace GetSlabReinfResult.ViewModel
         }
         #endregion
 
-        private void chengedHendler(object s, ListChangedEventArgs e)
+        public void SortList()
         {
-            if(e.ListChangedType== ListChangedType.ItemAdded || e.ListChangedType == ListChangedType.ItemMoved)
-                SortList();
-        }
-        private void SortList()
-        {
-            var QuickSort = new QuickSortLegendItem();
-            var a=QuickSort.SortList(ListOfLagendItems, 0, ListOfLagendItems.Count() - 1);
-            ListOfLagendItems = new BindingList<LegendItemViewModel>();
-            ListOfLagendItems = a;
-            ListOfLagendItems.ListChanged += chengedHendler;
-            ListOfLagendItems.AddingNew += AddNewItemHendler;
-            Filter();
-            OnPropertyChanged(nameof(ListOfLagendItems));
+            var sortableList = new List<LegendItemViewModel>(Items.AsEnumerable());
+            sortableList = sortableList.OrderBy(x => x.Areg).ToList();
+            for (int i = 0; i < sortableList.Count; i++)
+            {
+                Move(IndexOf(sortableList[i]), i);
+            }
+            if (ScaleType != 0)
+                GenerateColors();
         }
         private void Filter()
         {
             var listToRemove = new List<LegendItemViewModel>();
-            if (ListOfLagendItems.Any(x => x.Areg > ListOfLagendItems.First(y => y.Description == "Max").Areg)
-                || ListOfLagendItems.Any(x => x.Areg < ListOfLagendItems.First(y => y.Description == "Min").Areg))
+            if (this.Any(x => x.Areg > this.First(y => y.Description == "Max").Areg)
+                || this.Any(x => x.Areg < this.First(y => y.Description == "Min").Areg))
             {
-                ListOfLagendItems.ToList().ForEach(i =>
+                this.ToList().ForEach(i =>
                 {
-                    if (i.Areg > ListOfLagendItems.First(y => y.Description == "Max").Areg
-                    || i.Areg < ListOfLagendItems.First(y => y.Description == "Min").Areg)
+                    if (i.Areg > this.First(y => y.Description == "Max").Areg
+                    || i.Areg < this.First(y => y.Description == "Min").Areg)
                         listToRemove.Add(i);
                 });
                 listToRemove.ForEach(x =>
                 {
-                    ListOfLagendItems.Remove(x);
+                    this.Remove(x);
                 });
             }
         }
 
         private void PopulateTableDefault()
         {
-
-            ListOfLagendItems = new BindingList<LegendItemViewModel>();
             var list = new List<LegendItemViewModel>
             {
                  new LegendItemViewModel
@@ -376,24 +389,25 @@ namespace GetSlabReinfResult.ViewModel
             };
 
             ///Adding min
-            ListOfLagendItems.Add(new LegendItemViewModel
+            this.Add(new LegendItemViewModel
             {
                 Areg =MinA+ 0.01,
                 Color = Colors.Transparent,
                 Description = "Min"
             });
             ///Adding Max
-            ListOfLagendItems.Add(new LegendItemViewModel
+            this.Add(new LegendItemViewModel
             {
                 Areg = MaxA - SkipA,
                 Description = "Max",
                 Color = Colors.Red,
             });
 
-            list.ForEach(i =>{
-                if (!ListOfLagendItems.Any(x => x == i) && ListOfLagendItems.First(x => x.Description=="Max").Areg>i.Areg)
+            list.ForEach(i =>
+            {
+                if (!this.Any(x => x == i) && this.First(x => x.Description == "Max").Areg > i.Areg)
                 {
-                    ListOfLagendItems.Add(i);
+                    this.Add(i);
                 }
             });
 
@@ -402,13 +416,11 @@ namespace GetSlabReinfResult.ViewModel
 
         }
 
-
-
         public override string ToString()
         {
             var text = "";
 
-            ListOfLagendItems.ToList().ForEach(x =>
+            this.ToList().ForEach(x =>
             {
                 if(x.Description!="Max" && x.Description != "Min")
                     text += $"{x.Description};{x.Areg};color{x.Color.A}:{x.Color.R}:{x.Color.G}:{x.Color.B}{Environment.NewLine}";
@@ -458,8 +470,11 @@ namespace GetSlabReinfResult.ViewModel
                     Description = "Max",
                     Color = Colors.Red,
                 });
-                
-                ListOfLagendItems = new BindingList<LegendItemViewModel>(list);
+                this.Clear();
+                foreach (var item in list)
+                {
+                    this.Add(item);
+                }
                 SortList();
 
                 return list.OrderBy(x=>x.Areg).ToList();
@@ -470,7 +485,7 @@ namespace GetSlabReinfResult.ViewModel
             }
         }
 
-        private LegendItemViewModel FromDisc(LegendItemViewModel item)
+        private LegendItemViewModel MagicTextGenerator(LegendItemViewModel item)
         {
             if (item.Description.Contains("=") && item.Description.Contains("s") && item.Description.Contains("d"))
             {
@@ -481,6 +496,7 @@ namespace GetSlabReinfResult.ViewModel
 
                     item.Areg = Math.Round((Math.Pow(d, 2) * Math.PI / 4) / s, 2);
                     item.Description = $"Ø{d}/{s}cm";
+                    SortList();
                 }
                 catch (Exception)
                 {}
