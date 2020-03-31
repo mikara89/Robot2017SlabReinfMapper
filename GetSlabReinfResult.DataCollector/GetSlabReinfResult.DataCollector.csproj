@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logic\CollectPunchingForce.cs" />
     <Compile Include="Logic\FE_TABLE_ROWS.cs" />
     <Compile Include="Logic\GetSlabReinfResult.cs" />
     <Compile Include="Logic\IGetSlabReinfResult.cs" />

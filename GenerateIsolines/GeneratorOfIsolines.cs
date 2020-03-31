@@ -14,7 +14,7 @@ namespace GenerateIsolines
         /// <summary>
         /// Property for list of FE from slab
         /// </summary>
-        public List<FE> fe_list { get; internal set; } 
+        public List<FE> fe_list { get; internal set; }
 
         /// <summary>
         /// 
@@ -68,7 +68,7 @@ namespace GenerateIsolines
             {
                 var j = (i == fE.nodes.Count - 1) ? 0 : i + 1;
                 if (fE.nodes[i].A > Areq) fE.nodesForMapping.Add(fE.nodes[i]);
-                var n = PointSearcher(fE.nodes[i], fE.nodes[j], Areq);
+                var n = Node.PointSearcher(fE.nodes[i], fE.nodes[j], Areq);
                 if (n != null) fE.nodesForMapping.Add(n);
 
             }
@@ -84,7 +84,7 @@ namespace GenerateIsolines
                 for (int i = 0; i < x.nodesForMapping.Count; i++)
                 {
                     var j = (i == x.nodesForMapping.Count - 1) ? 0 : i + 1;
-                    if (!(x.nodes.Any(c => c == x.nodesForMapping[i]) || 
+                    if (!(x.nodes.Any(c => c == x.nodesForMapping[i]) ||
                     x.nodes.Any(c => c == x.nodesForMapping[j])))
                     {
                         var I = new Isoline();
@@ -95,7 +95,7 @@ namespace GenerateIsolines
                 }
             });
 
-            if (ListofLines.Count == 0) return new List<Isoline>(); 
+            if (ListofLines.Count == 0) return new List<Isoline>();
 
             return FilterIsoline(ListofLines); ;
         }
@@ -113,13 +113,13 @@ namespace GenerateIsolines
                     var t = true;
                     var line = backingList[0];
                     backingList.Remove(line);
-                    var removed = new List<Isoline>(); 
+                    var removed = new List<Isoline>();
                     do
-                    {                        
+                    {
                         Isoline line2 = null;
                         for (int i = 0; i < backingList.Count; i++)
                         {
-                            if(backingList[i].Nodes.First().Compare(line.Nodes.First()) ||
+                            if (backingList[i].Nodes.First().Compare(line.Nodes.First()) ||
                                 backingList[i].Nodes.Last().Compare(line.Nodes.First()) ||
                                 backingList[i].Nodes.Last().Compare(line.Nodes.Last()) ||
                                 backingList[i].Nodes.First().Compare(line.Nodes.Last())
@@ -130,7 +130,7 @@ namespace GenerateIsolines
                                     line2 = backingList[i];
                                     break;
                                 }
-                        }
+                            }
 
                         }
                         if (line2 != null)
@@ -156,11 +156,11 @@ namespace GenerateIsolines
 
         private static bool CompereListAndIsoline(List<Isoline> isolines, Isoline isoline)
         {
-            bool t=false;
+            bool t = false;
             isolines.ForEach(x =>
             {
                 if (x.Nodes.First().Compare(isoline.Nodes.First()) &&
-                x.Nodes.Last().Compare(isoline.Nodes.Last())) t= true; ///Use Compere
+                x.Nodes.Last().Compare(isoline.Nodes.Last())) t = true; ///Use Compere
                 if (x.Nodes.Last().Compare(isoline.Nodes.First()) &&
                 x.Nodes.First().Compare(isoline.Nodes.Last())) t = true; ///Use Compere
                 if (x.Nodes.Last().Compare(isoline.Nodes.Last()) &&
@@ -195,39 +195,190 @@ namespace GenerateIsolines
             return line;
         }
 
+        //private Node PointSearcher(Node n2, Node n1, double Areq)
+        //{
+        //    if ((n1.A > Areq && n2.A < Areq) ||
+        //     (n1.A < Areq && n2.A > Areq))
+        //    {
+        //        var deltA = n1.A - n2.A;
+        //        var deltAreg = Areq - n1.A;
+        //        var deltaX = n1.X - n2.X;
+        //        var deltaY = n1.Y - n2.Y;
 
+        //        var x = n1.X + Interpulation(deltaX, deltA, deltAreg);
+        //        var y = n1.Y + Interpulation(deltaY, deltA, deltAreg);
+        //        var A = n1.A + deltAreg;
+        //        if (Math.Round(A,3) != Math.Round(Areq,3))
+        //            throw new Exception($"Error: A={A} a Areg={Areq}");
+        //        return new Node() { X = x, Y = y, A = A };
 
-        private Node PointSearcher(Node n2, Node n1, double Areq)
-        {
-            if ((n1.A > Areq && n2.A < Areq) ||
-             (n1.A < Areq && n2.A > Areq))
-            {
-                var deltA = n1.A - n2.A;
-                var deltAreg = Areq - n1.A;
-                var deltaX = n1.X - n2.X;
-                var deltaY = n1.Y - n2.Y;
+        //    }
+        //    if (n1.A == Areq) return n1;
+        //    if (n2.A == Areq) return n2;
 
-                var x = n1.X + Interpulation(deltaX, deltA, deltAreg);
-                var y = n1.Y + Interpulation(deltaY, deltA, deltAreg);
-                var A = n1.A + deltAreg;
-                if (Math.Round(A,3) != Math.Round(Areq,3))
-                    throw new Exception($"Error: A={A} a Areg={Areq}");
-                return new Node() { X = x, Y = y, A = A };
+        //    return null;
+        //}
 
-            }
-            if (n1.A == Areq) return n1;
-            if (n2.A == Areq) return n2;
-
-            return null;
-        }
-
-        private double Interpulation(double x1, double val1, double val2)
-        {
-            return (1 / (val1 / x1)) * val2;
-        }
-
-
-
+        //private double Interpulation(double x1, double val1, double val2)
+        //{
+        //    return (1 / (val1 / x1)) * val2;
+        //}
     }
 
+    public class LineOfPunchingForces
+    {
+        private readonly FE[] SlabNodes;
+        public FE[] FiltredNodes { get; internal set; }
+        public Node[] LineOfPunchingNodes { get; internal set; }
+
+        public LineOfPunchingForces(FE[] SlabNodes, Node[] LineOfPunchingNodes)
+        {
+            this.SlabNodes = SlabNodes;
+            this.LineOfPunchingNodes = LineOfPunchingNodes;
+            FiltrNodes();
+            Calc();
+        }
+
+        private void FiltrNodes()
+        {
+            FiltredNodes = SlabNodes.Filter(LineOfPunchingNodes);
+        }
+
+        private void Calc()
+        {
+            FiltredNodes.MapNodes();
+        }
+    }
+
+    public interface IShape2D {
+        Node[] MainNodes { get; }
+        Node[] NodesOnSegment(int devide);
+        double Length { get; }
+    }
+    public class LineShape : IShape2D
+    {
+        public Node[] MainNodes { get; internal set; }
+        public LineShape(Node p1, Node p2)
+        {
+            MainNodes = new Node[] { p1, p2 };
+        }
+        public double Length { get {
+                return Node.GetNodesDistance(MainNodes[0], MainNodes[1]);
+            } }
+        public Node[] NodesOnSegment(int devide)
+        {
+            List<Node> result = new List<Node>();
+            for (int i = 0; i <= devide; i++)
+            {
+                result.Add(new Node()
+                {
+                    X = this.MainNodes[0].X + (i * (MainNodes[1].X - MainNodes[0].X) / devide),
+                    Y = this.MainNodes[0].Y + (i * (MainNodes[1].Y - MainNodes[0].Y) / devide)
+                });
+            }
+            return result.ToArray();
+        }
+    }
+    public class ArcShape : IShape2D
+    {
+        public double StartAngle { get; set; }
+        public double EndAngle { get; set; }
+        public Node[] MainNodes { get; internal set; }
+        public double Length
+        {
+            get
+            {
+                return (2 * Math.PI * r) * (Angle / 360);
+            }
+        }
+        public double r =>
+            Node.GetNodesDistance(MainNodes[0], MainNodes[1]);
+        public double Angle {
+            get {
+
+                var theta1 = Node.GetDegreeNode(MainNodes[0], MainNodes[1]);
+                var theta2 = Node.GetDegreeNode(MainNodes[0], MainNodes[2]);
+
+                double diff = Math.Abs(theta1 - theta2);
+
+                double angle = Math.Min(diff, Math.Abs(180 - diff));
+                if (angle == 0)
+                    angle = 180;
+                return angle;
+            }
+        }
+
+        public ArcShape(Node center, Node start, Node end)
+        {
+            MainNodes = new Node[] { center, start, end };
+        }
+        public Node[] NodesOnSegment(int devide)
+        {
+
+            List<Node> result = new List<Node>();
+
+            var startLineAngle = Node.GetDegreeNode(MainNodes[1], MainNodes[0]) == 0 ? 180 : Node.GetDegreeNode(MainNodes[1], MainNodes[0]);
+            for (int i = 0; i < devide + 1; i++)
+            {
+                var deltaAngle = startLineAngle + (Angle / devide * i);
+                result.Add(
+                    new Node {
+                        X = MainNodes[0].X + (r * Math.Cos(deltaAngle * Math.PI / 180)),
+                        Y = MainNodes[0].Y - (r * Math.Sin(deltaAngle * Math.PI / 180)),
+                    }
+
+                );
+            };
+            result.Reverse();
+            return result.ToArray();
+        }
+    }
+
+    public class ShapeOfLine : List<IShape2D>
+    {
+        public int Divide { get; set; } = 10;
+        public Node[] Nodes
+        {
+            get
+            {
+                List<Node> result = new List<Node>();
+                this.ForEach(shape =>
+                {
+                    result.AddRange(shape.NodesOnSegment(Divide));
+                });
+
+                return result.ToArray();
+            }
+        }
+        public double u1
+        {
+            get
+            {
+                double result = 0;
+                this.ForEach(shape =>
+                {
+                    result += shape.Length;
+                });
+
+                return result;
+            }
+        }
+        public ShapeOfLine(IEnumerable<IShape2D> collection)
+            : base(collection)
+        {
+
+        }
+    }
+    public enum ShapeType
+    {
+        Column,
+        End_Wall,
+        Corner_Wall_90, 
+        Corner_Wall_270
+    }
+    public enum PositionType
+    {
+        Middle,
+        Edge
+    }
 }

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyExtensionsTest.cs" />
+    <Compile Include="NodesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestLegendViewModel.cs" />
   </ItemGroup>
@@ -57,6 +58,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GenerateIsolines\GenerateIsolines.csproj">
+      <Project>{19FA231E-F834-415E-9386-47796260573A}</Project>
+      <Name>GenerateIsolines</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GetSlabReinfResult.DataCollector\GetSlabReinfResult.DataCollector.csproj">
       <Project>{422f225f-be55-4791-bd01-26c654f8d4bf}</Project>
       <Name>GetSlabReinfResult.DataCollector</Name>

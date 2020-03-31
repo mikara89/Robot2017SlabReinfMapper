@@ -1,4 +1,6 @@
-﻿using GetSlabReinfResult;
+﻿using GenerateIsolines;
+using GetSlabReinfResult;
+using GetSlabReinfResult.DataCollector.Logic;
 using RobotOM;
 using System;
 using System.Collections.Generic;
@@ -36,6 +38,7 @@ namespace GetSlabReinfResult
         {
     
             cmd_list.New(1, "Export slab reinforcement to .dxf"); // Text in Robot menu
+            cmd_list.New(2, "test"); // Text in Robot menu
             return cmd_list.Count;
         }
 
@@ -51,8 +54,16 @@ namespace GetSlabReinfResult
 
             try
             {
-                w = new MainWindow();
-                w.Show(); 
+                if (cmd_id == 1)
+                {
+                    w = new MainWindow();
+                    w.Show();
+                }
+                else
+                {
+                    TestCollectPunchingForce();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -83,6 +94,18 @@ namespace GetSlabReinfResult
             }
         }
 
-    }
+        private void TestCollectPunchingForce()
+        {
 
+            var s = new DataCollector.Logic.CollectPunchingForce(Services.RobotAppService.iapp);
+
+            s.CollectDataShareForces(new int[] { 327 }, new Progress<ProgressModelObject<double>>(), default);
+            var l = new CreatePunchingLine( ShapeType.End_Wall, 90,0.15,0.25);
+            var edge = s.PanelEdges.SelectMany(c => c.NodeEdges.Select(n => n));
+            var line= l.GetNodesOfLine(s.GetNode(1886), edge.ToArray());
+            var panelnodes = s.Panel.SelectMany(c => c.nodes.Select(n => n));
+            var Fline = new Q12InPunchLine(s.GetResultsInFE().ToArray(), line);
+            var max= Fline.Nodes.Max(f=>f.A)/1000;
+        }
+    }
 }

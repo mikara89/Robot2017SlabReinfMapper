@@ -15,6 +15,11 @@ namespace GenerateIsolines
         public List<RSANode> nodes;
         public int FE_ID { get; set; }
         public int Panel_ID { get; set; }
+
+        public RSA_FE()
+        {
+            nodes = new List<RSANode>();
+        }
         public double Max_AX_TOP
         {
             get
