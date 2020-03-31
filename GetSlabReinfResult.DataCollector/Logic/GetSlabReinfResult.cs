@@ -29,7 +29,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         public List<Panel> PanelEdges { get; internal set; }
 
         #region Constructor
-    public GetSlabReinfResult(CancellationToken ct,IRobotApplication iapp=null)
+        public GetSlabReinfResult(CancellationToken ct, IRobotApplication iapp = null)
         {
             Services.RobotAppService.iapp = iapp;
             Init(iapp);
@@ -46,7 +46,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
         /// </summary>
         /// <param name="panelPath">path of json file for panel</param>
         /// <param name="edgesPath">path of json file for edges</param>
-        public GetSlabReinfResult(string panelPath,string edgesPath)
+        public GetSlabReinfResult(string panelPath, string edgesPath)
         {
 
             this.panelPath = panelPath;
@@ -122,15 +122,15 @@ namespace GetSlabReinfResult.DataCollector.Logic
 
         #region CollectingData
 
-        
-        public void GetSlabsEdges(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress) 
+
+        public void GetSlabsEdges(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress)
         {
             var y = 0;
             foreach (var ObjNumber in ObjNumbers)
             {
                 y++;
                 progress.Report(new ProgressModelObject<double>() { ProgressToString = $"Getting slab edges {y}/{ObjNumbers.Count()}" });
-                var p = new Panel(); 
+                var p = new Panel();
                 p.PanelId = ObjNumber;
                 var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
                 var modelPoints = (RobotGeoPoint3DCollection)slab.Main.ModelPoints;
@@ -144,10 +144,15 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
 
-        public async Task QueryResultsAndNodeCoord(string plates,
+        public void QueryResultsAndNodeCoord(string plates,
             IProgress<ProgressModelObject<double>> progress,
             CancellationToken ct)
         {
+            if (Panel.Count == 0)
+            {
+                throw new SlabNotCalculatedExpetation("None of selected slabs are meshed and calculated");
+            }
+
             IRobotResultQueryReturnType Res;
 
             var selecPlate = str.Selections.Create(IRobotObjectType.I_OT_PANEL);
@@ -162,6 +167,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
             parm.SetParam(IRobotResultParamType.I_RPT_PANEL, 2);
             parm.SetParam(IRobotResultParamType.I_RPT_RESULT_POINT_COORDINATES, 31);
 
+            parm.SetParam(IRobotResultParamType.I_RPT_MULTI_THREADS, true);
+            parm.SetParam(IRobotResultParamType.I_RPT_THREAD_COUNT, 4);
+
             parm.ResultIds.SetSize(8);
 
             parm.ResultIds.Set(1, (int)T_DATA_TYPES.T_FERA_NOD_LONG_UP);
@@ -173,14 +181,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
             parm.ResultIds.Set(7, (int)T_DATA_TYPES.T_NODE_COORD_CART_Z);
 
 
-            var t = new RSATableQueryingResult();
-            Panel = await t.ReadFromTableAsync(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
+            //var t = new RSATableQueryingResult();
+            //Panel = await t.ReadFromTableAsync(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
 
-            if (Panel.Count == 0)
-            {
-                throw new SlabNotCalculatedExpetation("None of selected slabs are meshed and calculated");
-            }
             
+
 
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
             Res = robot.Project.Structure.Results.Query(parm, RobResRowSet);
@@ -226,7 +231,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                         }
                     }
                 }
-                ExitPlate:
+            ExitPlate:
                 i++;
                 ok = RobResRowSet.MoveNext();
             }
@@ -240,6 +245,34 @@ namespace GetSlabReinfResult.DataCollector.Logic
             IsDataCollected = true;
         }
 
+
+        private void CollectFeAndNodesId(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress,
+            CancellationToken ct)
+        {
+
+            foreach (var ObjNumber in ObjNumbers)
+            {
+                var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
+
+                var feString = slab.FiniteElems;
+
+                if (String.IsNullOrEmpty(feString))
+                    ErrorList.Add($"No results for slab {ObjNumber}");
+
+                var selecFE = str.Selections.Create(IRobotObjectType.I_OT_FINITE_ELEMENT) ;
+                selecFE.FromText(slab.FiniteElems);
+
+                for (int i = 0; i < selecFE.Count; i++)
+                {
+                    IRobotFiniteElement fe = selecFE.Get(i) as IRobotFiniteElement;
+
+                }
+            }
+
+         
+        }
+
+
         /// <summary>
         /// getting results asynchronously Ax+, Ax-, Ay+, Ay- for slab
         /// </summary>
@@ -252,12 +285,13 @@ namespace GetSlabReinfResult.DataCollector.Logic
             await Task.Run(() =>
             {
                 progress.Report(new ProgressModelObject<double>() { ProgressToString = $"Validating selection" });
-                    Validatings(ObjNumbers);
-                    ValidatingOnSameZCoord(ObjNumbers);
-                    GetSlabsEdges(ObjNumbers,progress);
+                Validatings(ObjNumbers);
+                ValidatingOnSameZCoord(ObjNumbers);
+                GetSlabsEdges(ObjNumbers, progress);
             }, ct);
-            await QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
-
+            QueryResultsForQxy(ObjNumbers[0]);
+            //CollectFeAndNodesId(ObjNumbers, progress, ct);
+            //QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
         }
         #endregion
 
@@ -334,7 +368,7 @@ namespace GetSlabReinfResult.DataCollector.Logic
                         ProgressToString = $"File {edgesPath.Split('\\').Last()} is loading"
                     });
                     PanelEdges = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Panel>>(File.ReadAllText(edgesPath));
-                }    
+                }
                 else throw new Exception($"File missing : {edgesPath}");
             });
 
