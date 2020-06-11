@@ -306,9 +306,9 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 Validatings(ObjNumbers);
                 ValidatingOnSameZCoord(ObjNumbers);
                 GetSlabsEdges(ObjNumbers, progress);
-                GetFEAndNodes(progress);
+                
             }, ct);
-            
+            GetFEAndNodes(progress);
             QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
 
         }
