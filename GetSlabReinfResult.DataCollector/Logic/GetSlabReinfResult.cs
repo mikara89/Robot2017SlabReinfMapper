@@ -181,12 +181,6 @@ namespace GetSlabReinfResult.DataCollector.Logic
             parm.ResultIds.Set(7, (int)T_DATA_TYPES.T_NODE_COORD_CART_Z);
 
 
-            //var t = new RSATableQueryingResult();
-            //Panel = await t.ReadFromTableAsync(plates.ToIntArrayFromRobotStringSelection(), progress, ct);
-
-            
-
-
             RobotResultRowSet RobResRowSet = new RobotResultRowSet();
             Res = robot.Project.Structure.Results.Query(parm, RobResRowSet);
             bool ok;
@@ -246,30 +240,54 @@ namespace GetSlabReinfResult.DataCollector.Logic
         }
 
 
-        private void CollectFeAndNodesId(int[] ObjNumbers, IProgress<ProgressModelObject<double>> progress,
-            CancellationToken ct)
+        private void GetFEAndNodes(IProgress<ProgressModelObject<double>> progress)
         {
 
-            foreach (var ObjNumber in ObjNumbers)
+            for (int k = 0; k < ObjNumbers.Length; k++)
             {
-                var slab = (RobotObjObject)str.Objects.Get(ObjNumber);
 
-                var feString = slab.FiniteElems;
+                progress.Report(new ProgressModelObject<double>
+                {
+                    ProgressToString = $"Collecting nodes and FEs from panel {ObjNumbers[k]} ",
+                    Progress = 8 / ObjNumbers.Length * (k + 1) * 10
+                });
+
+                var slab = (RobotObjObject)str.Objects.Get(ObjNumbers[k]);
+
+                var SelectionFe_col = str.Selections.Get(IRobotObjectType.I_OT_FINITE_ELEMENT);
+
+                string feString = slab.FiniteElems;
 
                 if (String.IsNullOrEmpty(feString))
-                    ErrorList.Add($"No results for slab {ObjNumber}");
+                    ErrorList.Add($"Panel {ObjNumbers[k]} not meshed and calculated");
 
-                var selecFE = str.Selections.Create(IRobotObjectType.I_OT_FINITE_ELEMENT) ;
-                selecFE.FromText(slab.FiniteElems);
+                SelectionFe_col.FromText(slab.FiniteElems);
 
-                for (int i = 0; i < selecFE.Count; i++)
+                var fe_col = str.FiniteElems.GetMany(SelectionFe_col) as RobotFiniteElementCollection;
+                for (int i = 1; i <= fe_col.Count; i++)
                 {
-                    IRobotFiniteElement fe = selecFE.Get(i) as IRobotFiniteElement;
+                    //progress.Report(new ProgressModelObject<double>
+                    //{
+                    //    ProgressToString = $"Collecting panel {ObjNumbers[k]} ({i + 1}/{fe_col.Count}) nodes and FEs",
+                    //    Progress = 8 / ObjNumbers.Length * (k + 1) * 10
 
+                    //});
+                    var fe = fe_col.Get(i) as IRobotFiniteElement;
+                    var RSAFE = new RSA_FE
+                    {
+                        FE_ID = fe.Number,
+                        Panel_ID = ObjNumbers[k],
+                        nodes = new List<RSANode>()
+                    };
+                    for (int j = 1; j <= fe.Nodes.Count; j++)
+                    {
+                        var n = fe.Nodes.Get(j);
+                        RSAFE.nodes.Add(new RSANode { NodeId = n, FE_Number = fe.Number });
+                    }
+                    Panel.Add(RSAFE);
                 }
-            }
 
-         
+            }
         }
 
 
@@ -288,10 +306,11 @@ namespace GetSlabReinfResult.DataCollector.Logic
                 Validatings(ObjNumbers);
                 ValidatingOnSameZCoord(ObjNumbers);
                 GetSlabsEdges(ObjNumbers, progress);
+                GetFEAndNodes(progress);
             }, ct);
-            QueryResultsForQxy(ObjNumbers[0]);
-            //CollectFeAndNodesId(ObjNumbers, progress, ct);
-            //QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+            
+            QueryResultsAndNodeCoord(ObjNumbers.ToRobotSelectionString(), progress, ct);
+
         }
         #endregion
 
